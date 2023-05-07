@@ -15,7 +15,7 @@ I developed this package as a lightweight tool to help researchers collect data 
 
 ## Usage
 
-```import substack_api```
+```from substack_api import substack_api```
 
 List all categories on Substack:
 
