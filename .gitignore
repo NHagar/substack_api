@@ -1,3 +1,4 @@
 .conda/
 __pycache__/
 dist/
+.env
