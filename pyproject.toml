@@ -20,4 +20,4 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = ""
+"Homepage" = "https://github.com/NHagar/substack_api"
