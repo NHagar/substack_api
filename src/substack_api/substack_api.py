@@ -137,3 +137,19 @@ def get_post_contents(newsletter_subdomain: str, slug: str, html_only: bool = Fa
         return post_info["body_html"]
     else:
         return post_info
+
+
+def get_newsletter_reads():
+    pass
+
+
+def get_newsletter_likes():
+    pass
+
+
+def get_newsletter_notes():
+    pass
+
+
+def get_newsletter_recs():
+    pass
