@@ -1,23 +1,16 @@
-[build-system]
-requires = ["hatchling",
-            "requests"]
-build-backend = "hatchling.build"
-
-[project]
+[tool.poetry]
 name = "substack-api"
-version = "0.0.2"
-authors = [
-    { name="Nick Hagar", email="nicholasrhagar@gmail.com" },
-]
-description = "The unofficial Substack API wrapper for Python."
+version = "0.1.0"
+description = "unofficial python wrapper for collecting substack data"
+authors = ["NHagar <nicholasrhagar@gmail.com>"]
+license = "MIT"
 readme = "README.md"
-license = { file="LICENSE" }
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
 
-[project.urls]
-"Homepage" = "https://github.com/NHagar/substack_api"
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
