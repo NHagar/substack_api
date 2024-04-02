@@ -22,8 +22,13 @@ def get_user_reads(username: str) -> List[Dict[str, str]]:
     return reads
 
 
-def get_user_likes():
-    pass
+def get_user_likes(user_id: int):
+    endpoint = (
+        f"https://substack.com/api/v1/reader/feed/profile/{user_id}?types%5B%5D=like"
+    )
+    r = requests.get(endpoint, headers=HEADERS)
+    likes = r.json()["items"]
+    return likes
 
 
 def get_user_notes():
