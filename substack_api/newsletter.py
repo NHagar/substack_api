@@ -4,9 +4,11 @@ from typing import Dict, List, Tuple, Union
 
 import requests
 
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
+
 
 def list_all_categories() -> List[Tuple[str, int]]:
     """
@@ -137,19 +139,3 @@ def get_post_contents(newsletter_subdomain: str, slug: str, html_only: bool = Fa
         return post_info["body_html"]
     else:
         return post_info
-
-
-def get_newsletter_reads():
-    pass
-
-
-def get_newsletter_likes():
-    pass
-
-
-def get_newsletter_notes():
-    pass
-
-
-def get_newsletter_recs():
-    pass
