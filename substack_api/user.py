@@ -31,8 +31,11 @@ def get_user_likes(user_id: int):
     return likes
 
 
-def get_user_notes():
-    pass
+def get_user_notes(user_id: int):
+    endpoint = f"https://substack.com/api/v1/reader/feed/profile/{user_id}"
+    r = requests.get(endpoint, headers=HEADERS)
+    notes = r.json()["items"]
+    return notes
 
 
 def get_user_recs():
