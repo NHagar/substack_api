@@ -7,6 +7,21 @@ HEADERS = {
 }
 
 
+def get_user_id(username: str) -> int:
+    """
+    Get the user ID of a Substack user.
+
+    Parameters
+    ----------
+    username : str
+        The username of the Substack user.
+    """
+    endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
+    r = requests.get(endpoint, headers=HEADERS)
+    user_id = r.json()["id"]
+    return user_id
+
+
 def get_user_reads(username: str) -> List[Dict[str, str]]:
     """
     Get newsletters from the "Reads" section of a user's profile.
