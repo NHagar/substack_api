@@ -117,6 +117,9 @@ def get_newsletter_post_metadata(
         full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
         posts = requests.get(full_url, headers=HEADERS).json()
 
+        if len(posts) == 0:
+            break
+
         last_id = posts[-1]["id"]
         if last_id == last_id_ref:
             break
