@@ -2,11 +2,14 @@ import math
 from time import sleep
 from typing import Dict, List, Tuple, Union
 
+from bs4 import BeautifulSoup
 import requests
+
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
+
 
 def list_all_categories() -> List[Tuple[str, int]]:
     """
@@ -14,7 +17,7 @@ def list_all_categories() -> List[Tuple[str, int]]:
     """
     endpoint_cat = "https://substack.com/api/v1/categories"
     r = requests.get(endpoint_cat, headers=HEADERS)
-    categories = [(i['name'], i['id']) for i in r.json()]
+    categories = [(i["name"], i["id"]) for i in r.json()]
     return categories
 
 
@@ -50,7 +53,12 @@ def category_name_to_id(name: str) -> int:
         raise ValueError(f"{name} is not in Substack's list of categories")
 
 
-def get_newsletters_in_category(category_id: int, subdomains_only: bool = False, start_page: int = None, end_page: int = None) -> List:
+def get_newsletters_in_category(
+    category_id: int,
+    subdomains_only: bool = False,
+    start_page: int = None,
+    end_page: int = None,
+) -> List:
     """
     Collects newsletter objects listed under specified category
 
@@ -84,7 +92,12 @@ def get_newsletters_in_category(category_id: int, subdomains_only: bool = False,
     return all_pubs
 
 
-def get_newsletter_post_metadata(newsletter_subdomain: str, slugs_only: bool = False, start_offset: int = None, end_offset: int = None) -> List:
+def get_newsletter_post_metadata(
+    newsletter_subdomain: str,
+    slugs_only: bool = False,
+    start_offset: int = None,
+    end_offset: int = None,
+) -> List:
     """
     Get available post metadata for newsletter
 
@@ -104,6 +117,9 @@ def get_newsletter_post_metadata(newsletter_subdomain: str, slugs_only: bool = F
         full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
         posts = requests.get(full_url, headers=HEADERS).json()
 
+        if len(posts) == 0:
+            break
+
         last_id = posts[-1]["id"]
         if last_id == last_id_ref:
             break
@@ -121,7 +137,9 @@ def get_newsletter_post_metadata(newsletter_subdomain: str, slugs_only: bool = F
     return all_posts
 
 
-def get_post_contents(newsletter_subdomain: str, slug: str, html_only: bool = False) -> Union[Dict, str]:
+def get_post_contents(
+    newsletter_subdomain: str, slug: str, html_only: bool = False
+) -> Union[Dict, str]:
     """
     Gets individual post metadata and contents
 
@@ -137,3 +155,24 @@ def get_post_contents(newsletter_subdomain: str, slug: str, html_only: bool = Fa
         return post_info["body_html"]
     else:
         return post_info
+
+
+def get_newsletter_recommendations(newsletter_subdomain: str) -> List[Dict[str, str]]:
+    """
+    Gets recommended newsletters for a given newsletter
+
+    Parameters
+    ----------
+    newsletter_subdomain : Substack subdomain of newsletter (can be retrieved from `get_newsletters_in_category`)
+    """
+    endpoint = f"https://{newsletter_subdomain}.substack.com/recommendations"
+    r = requests.get(endpoint, headers=HEADERS)
+    recs = r.text
+    soup = BeautifulSoup(recs, "html.parser")
+    div_elements = soup.find_all("div", class_="publication-content")
+    a_elements = [div.find("a") for div in div_elements]
+    titles = [i.text for i in soup.find_all("div", {"class": "publication-title"})]
+    links = [i["href"].split("?")[0] for i in a_elements]
+    results = [{"title": t, "url": u} for t, u in zip(titles, links)]
+
+    return results
