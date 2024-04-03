@@ -17,7 +17,7 @@ def get_user_id(username: str) -> int:
         The username of the Substack user.
     """
     endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
-    r = requests.get(endpoint, headers=HEADERS)
+    r = requests.get(endpoint, headers=HEADERS, timeout=30)
     user_id = r.json()["id"]
     return user_id
 
@@ -32,7 +32,7 @@ def get_user_reads(username: str) -> List[Dict[str, str]]:
         The username of the Substack user.
     """
     endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
-    r = requests.get(endpoint, headers=HEADERS)
+    r = requests.get(endpoint, headers=HEADERS, timeout=30)
     user_data = r.json()
     reads = [
         {
@@ -57,7 +57,7 @@ def get_user_likes(user_id: int):
     endpoint = (
         f"https://substack.com/api/v1/reader/feed/profile/{user_id}?types%5B%5D=like"
     )
-    r = requests.get(endpoint, headers=HEADERS)
+    r = requests.get(endpoint, headers=HEADERS, timeout=30)
     likes = r.json()["items"]
     return likes
 
@@ -72,6 +72,6 @@ def get_user_notes(user_id: int):
         The user ID of the Substack user.
     """
     endpoint = f"https://substack.com/api/v1/reader/feed/profile/{user_id}"
-    r = requests.get(endpoint, headers=HEADERS)
+    r = requests.get(endpoint, headers=HEADERS, timeout=30)
     notes = r.json()["items"]
     return notes

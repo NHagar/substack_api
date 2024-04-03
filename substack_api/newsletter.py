@@ -16,12 +16,12 @@ def list_all_categories() -> List[Tuple[str, int]]:
     Get name / id representations of all newsletter categories
     """
     endpoint_cat = "https://substack.com/api/v1/categories"
-    r = requests.get(endpoint_cat, headers=HEADERS)
+    r = requests.get(endpoint_cat, headers=HEADERS, timeout=30)
     categories = [(i["name"], i["id"]) for i in r.json()]
     return categories
 
 
-def category_id_to_name(id: int) -> str:
+def category_id_to_name(user_id: int) -> str:
     """
     Map a numerical category id to a name
 
@@ -30,11 +30,11 @@ def category_id_to_name(id: int) -> str:
     id : Numerical category identifier
     """
     categories = list_all_categories()
-    category_name = [i[0] for i in categories if i[1] == id]
+    category_name = [i[0] for i in categories if i[1] == user_id]
     if len(category_name) > 0:
         return category_name[0]
-    else:
-        raise ValueError(f"{id} is not in Substack's list of categories")
+
+    raise ValueError(f"{user_id} is not in Substack's list of categories")
 
 
 def category_name_to_id(name: str) -> int:
@@ -65,7 +65,7 @@ def get_newsletters_in_category(
     Parameters
     ----------
     category_id : Numerical category identifier
-    subdomains_only : Whether to return only newsletter subdomains (needed for post collection), or to return all metadata
+    subdomains_only : Whether to return only newsletter subdomains (needed for post collection)
     start_page : Start page for paginated API results
     end_page : End page for paginated API results
     """
@@ -78,7 +78,7 @@ def get_newsletters_in_category(
     all_pubs = []
     while more and page_num < page_num_end:
         full_url = base_url + str(page_num)
-        pubs = requests.get(full_url, headers=HEADERS).json()
+        pubs = requests.get(full_url, headers=HEADERS, timeout=30).json()
         more = pubs["more"]
         if subdomains_only:
             pubs = [i["id"] for i in pubs["publications"]]
@@ -103,8 +103,8 @@ def get_newsletter_post_metadata(
 
     Parameters
     ----------
-    newsletter_subdomain : Substack subdomain of newsletter (can be retrieved from `get_newsletters_in_category`)
-    slugs_only : Whether to return only post slugs (needed for post content collection), or to return all metadata
+    newsletter_subdomain : Substack subdomain of newsletter
+    slugs_only : Whether to return only post slugs (needed for post content collection)
     start_page : Start page for paginated API results
     end_page : End page for paginated API results
     """
@@ -115,7 +115,7 @@ def get_newsletter_post_metadata(
     all_posts = []
     while offset_start < offset_end:
         full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
-        posts = requests.get(full_url, headers=HEADERS).json()
+        posts = requests.get(full_url, headers=HEADERS, timeout=30).json()
 
         if len(posts) == 0:
             break
@@ -123,8 +123,8 @@ def get_newsletter_post_metadata(
         last_id = posts[-1]["id"]
         if last_id == last_id_ref:
             break
-        else:
-            last_id_ref = last_id
+
+        last_id_ref = last_id
 
         if slugs_only:
             all_posts.extend([i["slug"] for i in posts])
@@ -145,16 +145,16 @@ def get_post_contents(
 
     Parameters
     ----------
-    newsletter_subdomain : Substack subdomain of newsletter (can be retrieved from `get_newsletters_in_category`)
+    newsletter_subdomain : Substack subdomain of newsletter
     slug : Slug of post to retrieve (can be retrieved from `get_newsletter_post_metadata`)
     html_only : Whether to get only HTML of body text, or all metadata/content
     """
     endpoint = f"https://{newsletter_subdomain}.substack.com/api/v1/posts/{slug}"
-    post_info = requests.get(endpoint, headers=HEADERS).json()
+    post_info = requests.get(endpoint, headers=HEADERS, timeout=30).json()
     if html_only:
         return post_info["body_html"]
-    else:
-        return post_info
+
+    return post_info
 
 
 def get_newsletter_recommendations(newsletter_subdomain: str) -> List[Dict[str, str]]:
@@ -163,10 +163,10 @@ def get_newsletter_recommendations(newsletter_subdomain: str) -> List[Dict[str, 
 
     Parameters
     ----------
-    newsletter_subdomain : Substack subdomain of newsletter (can be retrieved from `get_newsletters_in_category`)
+    newsletter_subdomain : Substack subdomain of newsletter
     """
     endpoint = f"https://{newsletter_subdomain}.substack.com/recommendations"
-    r = requests.get(endpoint, headers=HEADERS)
+    r = requests.get(endpoint, headers=HEADERS, timeout=30)
     recs = r.text
     soup = BeautifulSoup(recs, "html.parser")
     div_elements = soup.find_all("div", class_="publication-content")
