@@ -1,21 +1,14 @@
-name: Publish to PyPI
+name: Python package
 on:
-  release:
-    types: [published]
-
+  push:
+    tags:
+      - "v*.*.*"
 jobs:
-  pypi_release:
-    name: Builds Using Poetry and Publishes to PyPI
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - name: Install Poetry
-        run: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-      - name: Add Poetry to path
-        run: echo "${HOME}/.poetry/bin" >> $GITHUB_PATH
-      - run: poetry install
-      - run: poetry run pytest
-      - run: poetry config pypi-token.pypi "${{ secrets.PYPI_API_KEY }}"
-      - name: Publish package
-        run: poetry publish --build
+      - uses: actions/checkout@v3
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v2.0
+        with:
+          pypi_token: ${{ secrets.PYPI_API_KEY }}
