@@ -104,7 +104,9 @@ class TestGetNewsletterRecommendations(unittest.TestCase):
         )
 
         mock_get.assert_called_once_with(
-            "https://test_subdomain.substack.com/recommendations", headers=HEADERS
+            "https://test_subdomain.substack.com/recommendations",
+            headers=HEADERS,
+            timeout=30,
         )
         mock_bs_init.assert_called_once_with("mocked_html", "html.parser")
         self.assertEqual(mock_find_all.call_count, 2)
