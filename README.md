@@ -8,6 +8,7 @@ I developed this package as a lightweight tool to help researchers collect data 
 * Download full JSON metadata about posts by newsletter
 * Download text of individual, publicly-available posts
 * List newsletter categories
+* Download JSON metadata about user actions - Notes, likes, newsletter reads
 
 ## Installation
 
@@ -15,28 +16,28 @@ I developed this package as a lightweight tool to help researchers collect data 
 
 ## Usage
 
-```from substack_api import substack_api```
+```from substack_api import newsletter, user```
 
 List all categories on Substack:
 
 ```
-substack_api.list_all_categories()
+newsletter.list_all_categories()
 ```
 
 Get metadata for the first 2 pages of Technology newsletters:
 
 ```
-substack_api.get_newsletters_in_category(4, start_page=0, end_page=2)
+newsletter.get_newsletters_in_category(4, start_page=0, end_page=2)
 ```
 
 Get post metadata for the most recent 30 posts from a newsletter:
 
 ```
-substack_api.get_newsletter_post_metadata("platformer", start_offset=0, end_offset=30)
+newsletter.get_newsletter_post_metadata("platformer", start_offset=0, end_offset=30)
 ```
 
 Get post contents (HTML only) from one newsletter post:
 
 ```
-substack_api.get_post_contents("platformer", "how-a-single-engineer-brought-down", html_only=True)
+newsletter.get_post_contents("platformer", "how-a-single-engineer-brought-down", html_only=True)
 ```
