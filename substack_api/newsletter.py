@@ -93,7 +93,7 @@ def get_newsletters_in_category(
 
 
 def get_newsletter_post_metadata(
-    newsletter_subdomain: str,
+    newsletter_domain: str,
     slugs_only: bool = False,
     start_offset: int = None,
     end_offset: int = None,
@@ -103,7 +103,7 @@ def get_newsletter_post_metadata(
 
     Parameters
     ----------
-    newsletter_subdomain : Substack subdomain of newsletter
+    newsletter_domain : Substack domain of newsletter
     slugs_only : Whether to return only post slugs (needed for post content collection)
     start_page : Start page for paginated API results
     end_page : End page for paginated API results
@@ -114,7 +114,7 @@ def get_newsletter_post_metadata(
     last_id_ref = 0
     all_posts = []
     while offset_start < offset_end:
-        full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
+        full_url = f"https://{newsletter_domain}/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
         posts = requests.get(full_url, headers=HEADERS, timeout=30).json()
 
         if len(posts) == 0:
@@ -138,18 +138,18 @@ def get_newsletter_post_metadata(
 
 
 def get_post_contents(
-    newsletter_subdomain: str, slug: str, html_only: bool = False
+    newsletter_domain: str, slug: str, html_only: bool = False
 ) -> Union[Dict, str]:
     """
     Gets individual post metadata and contents
 
     Parameters
     ----------
-    newsletter_subdomain : Substack subdomain of newsletter
+    newsletter_domain : Substack domain of newsletter
     slug : Slug of post to retrieve (can be retrieved from `get_newsletter_post_metadata`)
     html_only : Whether to get only HTML of body text, or all metadata/content
     """
-    endpoint = f"https://{newsletter_subdomain}.substack.com/api/v1/posts/{slug}"
+    endpoint = f"https://{newsletter_domain}/api/v1/posts/{slug}"
     post_info = requests.get(endpoint, headers=HEADERS, timeout=30).json()
     if html_only:
         return post_info["body_html"]
@@ -157,15 +157,15 @@ def get_post_contents(
     return post_info
 
 
-def get_newsletter_recommendations(newsletter_subdomain: str) -> List[Dict[str, str]]:
+def get_newsletter_recommendations(newsletter_domain: str) -> List[Dict[str, str]]:
     """
     Gets recommended newsletters for a given newsletter
 
     Parameters
     ----------
-    newsletter_subdomain : Substack subdomain of newsletter
+    newsletter_domain : Substack domain of newsletter
     """
-    endpoint = f"https://{newsletter_subdomain}.substack.com/recommendations"
+    endpoint = f"https://{newsletter_domain}/recommendations"
     r = requests.get(endpoint, headers=HEADERS, timeout=30)
     recs = r.text
     soup = BeautifulSoup(recs, "html.parser")
