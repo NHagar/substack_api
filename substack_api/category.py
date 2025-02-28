@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import requests
 
@@ -25,6 +25,7 @@ class Category:
     def __init__(self, name: str = None, id: int = None):
         self.name = name
         self.id = id
+        self._newsletters_data = None  # Cache for newsletter data
 
         # Retrieve missing attributes if only one of name or id is provided
         if self.name and self.id is None:
@@ -60,10 +61,25 @@ class Category:
                 return
         raise ValueError(f"Category ID {self.id} not found")
 
-    def get_newsletters(self, include_all_metadata: bool = False) -> List[str]:
+    def _fetch_newsletters_data(
+        self, force_refresh: bool = False
+    ) -> List[Dict[str, Any]]:
         """
-        Get newsletters in category
+        Fetch the raw newsletter data from the API and cache it
+
+        Parameters
+        ----------
+        force_refresh : bool
+            Whether to force a refresh of the data, ignoring the cache
+
+        Returns
+        -------
+        List[Dict[str, Any]]
+            Full newsletter metadata
         """
+        if self._newsletters_data is not None and not force_refresh:
+            return self._newsletters_data
+
         endpoint = f"https://substack.com/api/v1/category/public/{self.id}/all?page="
 
         all_newsletters = []
@@ -76,14 +92,41 @@ class Category:
             r.raise_for_status()
 
             resp = r.json()
-
-            if include_all_metadata:
-                newsletters = resp["publications"]
-            else:
-                newsletters = [i["id"] for i in resp["publications"]]
+            newsletters = resp["publications"]
             all_newsletters.extend(newsletters)
             page_num += 1
             more = resp["more"]
             print(f"page {page_num} done")
 
+        self._newsletters_data = all_newsletters
         return all_newsletters
+
+    def get_newsletter_ids(self) -> List[int]:
+        """
+        Get only the IDs of newsletters in this category
+
+        Returns
+        -------
+        List[int]
+            List of newsletter IDs
+        """
+        data = self._fetch_newsletters_data()
+
+        return [item["id"] for item in data]
+
+    def get_newsletter_metadata(self) -> List[Dict[str, Any]]:
+        """
+        Get full metadata for all newsletters in this category
+
+        Returns
+        -------
+        List[Dict[str, Any]]
+            List of newsletter metadata dictionaries
+        """
+        return self._fetch_newsletters_data()
+
+    def refresh_data(self) -> None:
+        """
+        Force refresh of the newsletter data cache
+        """
+        self._fetch_newsletters_data(force_refresh=True)
