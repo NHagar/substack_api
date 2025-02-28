@@ -2,9 +2,8 @@ import math
 from time import sleep
 from typing import Dict, List, Tuple, Union
 
-from bs4 import BeautifulSoup
 import requests
-
+from bs4 import BeautifulSoup
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
@@ -73,7 +72,6 @@ def get_newsletters_in_category(
     page_num_end = math.inf if end_page is None else end_page
 
     base_url = f"https://substack.com/api/v1/category/public/{category_id}/all?page="
-    page_num = 0
     more = True
     all_pubs = []
     while more and page_num < page_num_end:
@@ -113,26 +111,41 @@ def get_newsletter_post_metadata(
 
     last_id_ref = 0
     all_posts = []
-    while offset_start < offset_end:
-        full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
-        posts = requests.get(full_url, headers=HEADERS, timeout=30).json()
 
-        if len(posts) == 0:
-            break
+    full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
+    posts = requests.get(full_url, headers=HEADERS, timeout=30).json()
 
-        last_id = posts[-1]["id"]
-        if last_id == last_id_ref:
-            break
+    if len(posts) == 0:
+        return all_posts
 
-        last_id_ref = last_id
+    if slugs_only:
+        all_posts.extend([i["slug"] for i in posts])
+    else:
+        all_posts.extend(posts)
 
-        if slugs_only:
-            all_posts.extend([i["slug"] for i in posts])
-        else:
-            all_posts.extend(posts)
-
+    # Continue pagination only if not slugs_only
+    if not slugs_only:
+        last_id_ref = posts[-1]["id"]
         offset_start += 10
         sleep(1)
+
+        while offset_start < offset_end:
+            full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
+            posts = requests.get(full_url, headers=HEADERS, timeout=30).json()
+
+            if len(posts) == 0:
+                break
+
+            last_id = posts[-1]["id"]
+            if last_id == last_id_ref:
+                break
+
+            last_id_ref = last_id
+
+            all_posts.extend(posts)
+
+            offset_start += 10
+            sleep(1)
 
     return all_posts
 
