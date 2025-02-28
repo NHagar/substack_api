@@ -101,18 +101,18 @@ class Category:
         self._newsletters_data = all_newsletters
         return all_newsletters
 
-    def get_newsletter_ids(self) -> List[int]:
+    def get_newsletter_urls(self) -> List[int]:
         """
-        Get only the IDs of newsletters in this category
+        Get only the URLs of newsletters in this category
 
         Returns
         -------
         List[int]
-            List of newsletter IDs
+            List of newsletter URLs
         """
         data = self._fetch_newsletters_data()
 
-        return [item["id"] for item in data]
+        return [item["base_url"] for item in data]
 
     def get_newsletter_metadata(self) -> List[Dict[str, Any]]:
         """
