@@ -1,5 +1,4 @@
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlencode
+from typing import Any, Dict, List
 
 import requests
 
@@ -15,6 +14,8 @@ class User:
 
     def __init__(self, username: str):
         self.username = username
+        self.endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
+        self._user_data = None  # Cache for user data
 
     def __str__(self):
         return f"User: {self.username}"
@@ -22,182 +23,106 @@ class User:
     def __repr__(self):
         return f"User(username={self.username})"
 
+    def _fetch_user_data(self, force_refresh: bool = False):
+        """
+        Fetch the raw user data from the API and cache it
 
-def get_user_id(username: str) -> int:
-    """
-    Get the user ID of a Substack user.
+        Parameters
+        ----------
+        force_refresh : bool
+            Whether to force a refresh of the data, ignoring the cache
 
-    Parameters
-    ----------
-    username : str
-        The username of the Substack user.
+        Returns
+        -------
+        dict
+            Full user profile data
+        """
+        if self._user_data is not None and not force_refresh:
+            return self._user_data
 
-    Returns
-    -------
-    int
-        The user's unique ID number
+        r = requests.get(self.endpoint, headers=HEADERS, timeout=30)
+        r.raise_for_status()
 
-    Raises
-    ------
-    requests.exceptions.HTTPError
-        If the user doesn't exist or the request fails
-    """
-    endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
-    r = requests.get(endpoint, headers=HEADERS, timeout=30)
-    r.raise_for_status()  # Raise an exception for bad responses
-    user_id = r.json()["id"]
-    return user_id
+        self._user_data = r.json()
+        return self._user_data
 
+    def get_raw_data(self, force_refresh: bool = False):
+        """
+        Get the complete raw user data.
 
-def get_user_reads(username: str) -> List[Dict[str, str]]:
-    """
-    Get newsletters from the "Reads" section of a user's profile.
+        Parameters
+        ----------
+        force_refresh : bool
+            Whether to force a refresh of the data, ignoring the cache
 
-    Parameters
-    ----------
-    username : str
-        The username of the Substack user.
+        Returns
+        -------
+        dict
+            Full user profile data
+        """
+        return self._fetch_user_data(force_refresh=force_refresh)
 
-    Returns
-    -------
-    List[Dict[str, str]]
-        List of dictionaries containing publication information and subscription status
-    """
-    endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
-    r = requests.get(endpoint, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    user_data = r.json()
-    reads = [
-        {
-            "publication_id": i["publication"]["id"],
-            "publication_name": i["publication"]["name"],
-            "subscription_status": i["membership_state"],
-        }
-        for i in user_data["subscriptions"]
-    ]
-    return reads
+    @property
+    def id(self) -> int:
+        """
+        Get the user's unique ID number
 
+        Returns
+        -------
+        int
+            The user's ID
+        """
+        data = self._fetch_user_data()
+        return data["id"]
 
-def get_user_likes(user_id: int, limit: Optional[int] = None) -> List[Dict]:
-    """
-    Get liked posts from a user's profile.
+    @property
+    def name(self) -> str:
+        """
+        Get the user's name
 
-    Parameters
-    ----------
-    user_id : int
-        The user ID of the Substack user.
-    limit : Optional[int]
-        Optional limit for number of results to return
+        Returns
+        -------
+        str
+            The user's name
+        """
+        data = self._fetch_user_data()
+        return data["name"]
 
-    Returns
-    -------
-    List[Dict]
-        List of posts that the user has liked
-    """
-    params = {"types[]": "like"}
-    if limit:
-        params["limit"] = limit
+    @property
+    def profile_set_up_at(self) -> str:
+        """
+        Get the date when the user's profile was set up
 
-    query_string = urlencode(params)
-    endpoint = (
-        f"https://substack.com/api/v1/reader/feed/profile/{user_id}?{query_string}"
-    )
-    r = requests.get(endpoint, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    likes = r.json()["items"]
-    return likes
+        Returns
+        -------
+        str
+            Profile setup timestamp
+        """
+        data = self._fetch_user_data()
+        return data["profile_set_up_at"]
 
+    def get_subscriptions(self) -> List[Dict[str, Any]]:
+        """
+        Get newsletters the user has subscribed to
 
-def get_user_notes(
-    user_id: int, limit: Optional[int] = None, offset: Optional[int] = None
-) -> List[Dict]:
-    """
-    Get notes and comments posted by a user.
+        Returns
+        -------
+        List[Dict[str, Any]]
+            List of publications the user subscribes to with domain info
+        """
+        data = self._fetch_user_data()
+        subscriptions = []
 
-    Parameters
-    ----------
-    user_id : int
-        The user ID of the Substack user.
-    limit : Optional[int]
-        Optional limit for number of results to return
-    offset : Optional[int]
-        Optional offset for pagination
+        for sub in data["subscriptions"]:
+            pub = sub["publication"]
+            domain = pub.get("custom_domain") or f"{pub['subdomain']}.substack.com"
+            subscriptions.append(
+                {
+                    "publication_id": pub["id"],
+                    "publication_name": pub["name"],
+                    "domain": domain,
+                    "membership_state": sub["membership_state"],
+                }
+            )
 
-    Returns
-    -------
-    List[Dict]
-        List of notes and comments by the user
-    """
-    params = {}
-    if limit:
-        params["limit"] = limit
-    if offset is not None:
-        params["offset"] = offset
-
-    query_string = urlencode(params)
-    endpoint = f"https://substack.com/api/v1/reader/feed/profile/{user_id}"
-    if query_string:
-        endpoint += f"?{query_string}"
-
-    r = requests.get(endpoint, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    notes = r.json()["items"]
-    return notes
-
-
-def get_user_written_posts(user_id: int) -> List[Dict[str, Any]]:
-    """
-    Get posts written by a user.
-
-    Parameters
-    ----------
-    user_id : int
-        The user ID of the Substack user.
-
-    Returns
-    -------
-    List[Dict[str, Any]]
-        List of posts written by the user
-    """
-    endpoint = f"https://substack.com/api/v1/user/{user_id}/written"
-    r = requests.get(endpoint, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    posts = r.json()["posts"]
-    return posts
-
-
-def get_user_commented_posts(
-    user_id: int, page: Optional[int] = None, limit: Optional[int] = None
-) -> List[Dict[str, Any]]:
-    """
-    Get posts that a user has commented on.
-
-    Parameters
-    ----------
-    user_id : int
-        The user ID of the Substack user.
-    page : Optional[int]
-        Optional page number for pagination
-    limit : Optional[int]
-        Optional limit for number of results per page
-
-    Returns
-    -------
-    List[Dict[str, Any]]
-        List of comments made by the user
-    """
-    params = {}
-    if page:
-        params["page"] = page
-    if limit:
-        params["limit"] = limit
-
-    query_string = urlencode(params)
-    endpoint = f"https://substack.com/api/v1/user/{user_id}/comments"
-    if query_string:
-        endpoint += f"?{query_string}"
-
-    r = requests.get(endpoint, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    comments = r.json()["comments"]
-    return comments
+        return subscriptions
