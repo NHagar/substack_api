@@ -66,9 +66,11 @@ class Category:
         """
         endpoint = f"https://substack.com/api/v1/category/public/{self.id}/all?page="
 
+        all_newsletters = []
         page_num = 0
         more = True
-        while more:
+        # endpoint doesn't return more than 21 pages
+        while more and page_num <= 20:
             full_url = endpoint + str(page_num)
             r = requests.get(full_url, headers=HEADERS, timeout=30)
             r.raise_for_status()
@@ -79,8 +81,9 @@ class Category:
                 newsletters = resp["publications"]
             else:
                 newsletters = [i["id"] for i in resp["publications"]]
+            all_newsletters.extend(newsletters)
             page_num += 1
             more = resp["more"]
             print(f"page {page_num} done")
 
-        return newsletters
+        return all_newsletters
