@@ -1,6 +1,6 @@
 import math
 from time import sleep
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Union
 
 import requests
 from bs4 import BeautifulSoup
@@ -8,48 +8,6 @@ from bs4 import BeautifulSoup
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
-
-
-def list_all_categories() -> List[Tuple[str, int]]:
-    """
-    Get name / id representations of all newsletter categories
-    """
-    endpoint_cat = "https://substack.com/api/v1/categories"
-    r = requests.get(endpoint_cat, headers=HEADERS, timeout=30)
-    categories = [(i["name"], i["id"]) for i in r.json()]
-    return categories
-
-
-def category_id_to_name(user_id: int) -> str:
-    """
-    Map a numerical category id to a name
-
-    Parameters
-    ----------
-    id : Numerical category identifier
-    """
-    categories = list_all_categories()
-    category_name = [i[0] for i in categories if i[1] == user_id]
-    if len(category_name) > 0:
-        return category_name[0]
-
-    raise ValueError(f"{user_id} is not in Substack's list of categories")
-
-
-def category_name_to_id(name: str) -> int:
-    """
-    Map a category name to a numerical id
-
-    Parameters
-    ----------
-    name : Category name
-    """
-    categories = list_all_categories()
-    category_id = [i[1] for i in categories if i[0] == name]
-    if len(category_id) > 0:
-        return category_id[0]
-    else:
-        raise ValueError(f"{name} is not in Substack's list of categories")
 
 
 def get_newsletters_in_category(
