@@ -10,44 +10,6 @@ HEADERS = {
 }
 
 
-def get_newsletters_in_category(
-    category_id: int,
-    subdomains_only: bool = False,
-    start_page: int = None,
-    end_page: int = None,
-) -> List:
-    """
-    Collects newsletter objects listed under specified category
-
-    Parameters
-    ----------
-    category_id : Numerical category identifier
-    subdomains_only : Whether to return only newsletter subdomains (needed for post collection)
-    start_page : Start page for paginated API results
-    end_page : End page for paginated API results
-    """
-    page_num = 0 if start_page is None else start_page
-    page_num_end = math.inf if end_page is None else end_page
-
-    base_url = f"https://substack.com/api/v1/category/public/{category_id}/all?page="
-    more = True
-    all_pubs = []
-    while more and page_num < page_num_end:
-        full_url = base_url + str(page_num)
-        pubs = requests.get(full_url, headers=HEADERS, timeout=30).json()
-        more = pubs["more"]
-        if subdomains_only:
-            pubs = [i["id"] for i in pubs["publications"]]
-        else:
-            pubs = pubs["publications"]
-        all_pubs.extend(pubs)
-        page_num += 1
-        print(f"page {page_num} done")
-        sleep(1)
-
-    return all_pubs
-
-
 def get_newsletter_post_metadata(
     newsletter_subdomain: str,
     slugs_only: bool = False,

@@ -64,12 +64,23 @@ class Category:
         """
         Get newsletters in category
         """
-        endpoint = f"https://substack.com/api/v1/category/public/{self.id}/all"
-        r = requests.get(endpoint, headers=HEADERS, timeout=30)
-        r.raise_for_status()
+        endpoint = f"https://substack.com/api/v1/category/public/{self.id}/all?page="
 
-        if include_all_metadata:
-            newsletters = r.json()["publications"]
-        else:
-            newsletters = [i["id"] for i in r.json()["publications"]]
+        page_num = 0
+        more = True
+        while more:
+            full_url = endpoint + str(page_num)
+            r = requests.get(full_url, headers=HEADERS, timeout=30)
+            r.raise_for_status()
+
+            resp = r.json()
+
+            if include_all_metadata:
+                newsletters = resp["publications"]
+            else:
+                newsletters = [i["id"] for i in resp["publications"]]
+            page_num += 1
+            more = resp["more"]
+            print(f"page {page_num} done")
+
         return newsletters
