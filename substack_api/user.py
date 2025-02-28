@@ -8,6 +8,21 @@ HEADERS = {
 }
 
 
+class User:
+    """
+    User class for interacting with Substack user profiles
+    """
+
+    def __init__(self, username: str):
+        self.username = username
+
+    def __str__(self):
+        return f"User: {self.username}"
+
+    def __repr__(self):
+        return f"User(username={self.username})"
+
+
 def get_user_id(username: str) -> int:
     """
     Get the user ID of a Substack user.

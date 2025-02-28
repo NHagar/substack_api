@@ -17,9 +17,24 @@ def mock_categories():
 @pytest.fixture
 def mock_newsletters_data():
     return [
-        {"id": 101, "name": "Tech Insights", "paid_subscriber_count": 1500},
-        {"id": 102, "name": "Future Tech", "paid_subscriber_count": 2500},
-        {"id": 103, "name": "AI Weekly", "paid_subscriber_count": 3000},
+        {
+            "id": 101,
+            "name": "Tech Insights",
+            "paid_subscriber_count": 1500,
+            "base_url": "https://techinsights.substack.com",
+        },
+        {
+            "id": 102,
+            "name": "Future Tech",
+            "paid_subscriber_count": 2500,
+            "base_url": "https://futuretech.substack.com",
+        },
+        {
+            "id": 103,
+            "name": "AI Weekly",
+            "paid_subscriber_count": 3000,
+            "base_url": "https://aiweekly.substack.com",
+        },
     ]
 
 
@@ -187,13 +202,17 @@ def test_fetch_newsletters_data(mock_get, mock_newsletters_data):
 
 
 @patch("substack_api.category.Category._fetch_newsletters_data")
-def test_get_newsletter_ids(mock_fetch_data, mock_newsletters_data):
+def test_get_newsletter_urls(mock_fetch_data, mock_newsletters_data):
     mock_fetch_data.return_value = mock_newsletters_data
 
     category = Category(name="Technology", id=1)
-    ids = category.get_newsletter_ids()
+    urls = category.get_newsletter_urls()
 
-    assert ids == [101, 102, 103]
+    assert urls == [
+        "https://techinsights.substack.com",
+        "https://futuretech.substack.com",
+        "https://aiweekly.substack.com",
+    ]
     mock_fetch_data.assert_called_once()
 
 

@@ -10,6 +10,21 @@ HEADERS = {
 }
 
 
+class Newsletter:
+    """
+    Newsletter class for interacting with Substack newsletters
+    """
+
+    def __init__(self, url: str):
+        self.url = url
+
+    def __str__(self):
+        return f"Newsletter: {self.url}"
+
+    def __repr__(self):
+        return f"Newsletter(url={self.url})"
+
+
 def get_newsletter_post_metadata(
     newsletter_subdomain: str,
     slugs_only: bool = False,
