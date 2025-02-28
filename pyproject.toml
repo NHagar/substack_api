@@ -1,17 +1,15 @@
-[tool.poetry]
+[project]
 name = "substack-api"
 version = "0.1.0"
-description = "unofficial python wrapper for collecting substack data"
-authors = ["NHagar <nicholasrhagar@gmail.com>"]
-license = "MIT"
+description = "Add your description here"
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.3",
+    "requests>=2.32.3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-requests = "^2.31.0"
-beautifulsoup4 = "^4.12.3"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "ruff>=0.9.9",
+]
