@@ -23,7 +23,7 @@ class Newsletter:
         return f"Newsletter(url={self.url})"
 
     def _fetch_paginated_posts(
-        self, params: Dict[str, str], limit: Optional[int] = None
+        self, params: Dict[str, str], limit: Optional[int] = None, page_size: int = 15
     ) -> List[dict]:
         """
         Helper method to fetch paginated posts with different query parameters
@@ -37,7 +37,7 @@ class Newsletter:
         """
         results = []
         offset = 0
-        batch_size = 15  # The API default limit per request
+        batch_size = page_size  # The API default limit per request
         more_items = True
 
         while more_items:

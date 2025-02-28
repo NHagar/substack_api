@@ -2,7 +2,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from substack_api import Newsletter, Post, User
+from substack_api import Newsletter, User
+from substack_api.newsletter import HEADERS
 
 
 @pytest.fixture
@@ -73,12 +74,12 @@ def test_fetch_paginated_posts_single_page(mock_get, newsletter_url, mock_post_i
 
     # Check we made the right API call
     expected_url = f"{newsletter_url}/api/v1/archive?sort=new&offset=0&limit=15"
-    mock_get.assert_called_once_with(expected_url, headers=newsletter.HEADERS)
+    mock_get.assert_called_once_with(expected_url, headers=HEADERS)
 
     # Check we got the expected results
     assert len(results) == 3
-    assert isinstance(results[0], Post)
-    assert results[0].url == mock_post_items[0]["canonical_url"]
+    assert isinstance(results[0], dict)
+    assert results[0]["canonical_url"] == mock_post_items[0]["canonical_url"]
 
 
 @patch("substack_api.newsletter.requests.get")
@@ -108,10 +109,10 @@ def test_fetch_paginated_posts_multiple_pages(
 
     newsletter = Newsletter(newsletter_url)
     params = {"sort": "new"}
-    results = newsletter._fetch_paginated_posts(params)
+    results = newsletter._fetch_paginated_posts(params, page_size=3)
 
     # Check we made the expected number of API calls
-    assert mock_get.call_count == 3
+    assert mock_get.call_count == 2
 
     # Check we got the expected results (3 from first page + 1 from second)
     assert len(results) == 4
@@ -131,8 +132,8 @@ def test_fetch_paginated_posts_with_limit(mock_get, newsletter_url, mock_post_it
 
     # Check we only got the requested limit
     assert len(results) == 2
-    assert isinstance(results[0], Post)
-    assert results[0].url == mock_post_items[0]["canonical_url"]
+    assert isinstance(results[0], dict)
+    assert results[0]["canonical_url"] == mock_post_items[0]["canonical_url"]
 
 
 @patch("substack_api.newsletter.requests.get")
@@ -212,7 +213,7 @@ def test_get_recommendations_success(mock_get, newsletter_url, mock_recommendati
         # Verify the API was called correctly
         mock_get.assert_called_once_with(
             f"{newsletter_url}/api/v1/recommendations/from/123",
-            headers=newsletter.HEADERS,
+            headers=HEADERS,
         )
 
         # Verify we got the expected recommendations
@@ -272,8 +273,8 @@ def test_get_authors(mock_get, newsletter_url, mock_authors):
     # Check results
     assert len(authors) == 2
     assert all(isinstance(author, User) for author in authors)
-    assert authors[0].handle == "author1"
-    assert authors[1].handle == "author2"
+    assert authors[0].username == "author1"
+    assert authors[1].username == "author2"
 
 
 @patch("substack_api.newsletter.requests.get")
