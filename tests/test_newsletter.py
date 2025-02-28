@@ -1,294 +1,290 @@
-import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
-import requests
+import pytest
 
-from substack_api.newsletter import (
-    HEADERS,
-    category_id_to_name,
-    category_name_to_id,
-    get_newsletter_post_metadata,
-    get_newsletter_recommendations,
-    get_newsletters_in_category,
-    get_post_contents,
-    list_all_categories,
-)
+from substack_api import Newsletter, Post, User
 
 
-class TestCategoryFunctions(unittest.TestCase):
-    @patch("requests.get")
-    def test_list_all_categories(self, mock_get):
-        mock_response = Mock()
-        mock_response.json.return_value = [
-            {"id": 1, "name": "Politics"},
-            {"id": 2, "name": "Technology"},
-        ]
-        mock_get.return_value = mock_response
-
-        result = list_all_categories()
-
-        mock_get.assert_called_once_with(
-            "https://substack.com/api/v1/categories", headers=HEADERS, timeout=30
-        )
-        self.assertEqual(result, [("Politics", 1), ("Technology", 2)])
-
-    @patch("substack_api.newsletter.list_all_categories")
-    def test_category_id_to_name_success(self, mock_list_all_categories):
-        mock_list_all_categories.return_value = [("Politics", 1), ("Technology", 2)]
-
-        result = category_id_to_name(1)
-        self.assertEqual(result, "Politics")
-
-    @patch("substack_api.newsletter.list_all_categories")
-    def test_category_id_to_name_error(self, mock_list_all_categories):
-        mock_list_all_categories.return_value = [("Politics", 1), ("Technology", 2)]
-
-        with self.assertRaises(ValueError):
-            category_id_to_name(999)
-
-    @patch("substack_api.newsletter.list_all_categories")
-    def test_category_name_to_id_success(self, mock_list_all_categories):
-        mock_list_all_categories.return_value = [("Politics", 1), ("Technology", 2)]
-
-        result = category_name_to_id("Technology")
-        self.assertEqual(result, 2)
-
-    @patch("substack_api.newsletter.list_all_categories")
-    def test_category_name_to_id_error(self, mock_list_all_categories):
-        mock_list_all_categories.return_value = [("Politics", 1), ("Technology", 2)]
-
-        with self.assertRaises(ValueError):
-            category_name_to_id("NonExistent")
+@pytest.fixture
+def newsletter_url():
+    return "https://testblog.substack.com"
 
 
-class TestGetNewslettersInCategory(unittest.TestCase):
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletters_in_category_pagination(self, mock_sleep, mock_get):
-        # First page with more=True
-        first_response = {
-            "publications": [
-                {"id": "pub1", "name": "Newsletter 1"},
-                {"id": "pub2", "name": "Newsletter 2"},
-            ],
-            "more": True,
+@pytest.fixture
+def mock_post_items():
+    return [
+        {
+            "id": 101,
+            "title": "First Test Post",
+            "canonical_url": "https://testblog.substack.com/p/first-test-post",
+        },
+        {
+            "id": 102,
+            "title": "Second Test Post",
+            "canonical_url": "https://testblog.substack.com/p/second-test-post",
+        },
+        {
+            "id": 103,
+            "title": "Third Test Post",
+            "canonical_url": "https://testblog.substack.com/p/third-test-post",
+        },
+    ]
+
+
+@pytest.fixture
+def mock_recommendations():
+    return [
+        {"subdomain": "newsletter1", "custom_domain": None},
+        {"subdomain": "newsletter2", "custom_domain": None},
+        {"subdomain": "newsletter3", "custom_domain": "https://custom.domain.com"},
+    ]
+
+
+@pytest.fixture
+def mock_authors():
+    return [
+        {"handle": "author1", "name": "Author One"},
+        {"handle": "author2", "name": "Author Two"},
+    ]
+
+
+def test_newsletter_init(newsletter_url):
+    newsletter = Newsletter(newsletter_url)
+    assert newsletter.url == newsletter_url
+
+
+def test_newsletter_string_representation(newsletter_url):
+    newsletter = Newsletter(newsletter_url)
+    assert str(newsletter) == f"Newsletter: {newsletter_url}"
+    assert repr(newsletter) == f"Newsletter(url={newsletter_url})"
+
+
+@patch("substack_api.newsletter.requests.get")
+def test_fetch_paginated_posts_single_page(mock_get, newsletter_url, mock_post_items):
+    # Set up mock
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = mock_post_items
+    mock_get.return_value = mock_response
+
+    newsletter = Newsletter(newsletter_url)
+    params = {"sort": "new"}
+    results = newsletter._fetch_paginated_posts(params, limit=None)
+
+    # Check we made the right API call
+    expected_url = f"{newsletter_url}/api/v1/archive?sort=new&offset=0&limit=15"
+    mock_get.assert_called_once_with(expected_url, headers=newsletter.HEADERS)
+
+    # Check we got the expected results
+    assert len(results) == 3
+    assert isinstance(results[0], Post)
+    assert results[0].url == mock_post_items[0]["canonical_url"]
+
+
+@patch("substack_api.newsletter.requests.get")
+def test_fetch_paginated_posts_multiple_pages(
+    mock_get, newsletter_url, mock_post_items
+):
+    # Set up mock to return 3 items for first page, 1 item for second page
+    mock_response_1 = MagicMock()
+    mock_response_1.status_code = 200
+    mock_response_1.json.return_value = mock_post_items
+
+    mock_response_2 = MagicMock()
+    mock_response_2.status_code = 200
+    mock_response_2.json.return_value = [
+        {
+            "id": 104,
+            "title": "Fourth Test Post",
+            "canonical_url": "https://testblog.substack.com/p/fourth-test-post",
         }
-        # Second page with more=False
-        second_response = {
-            "publications": [{"id": "pub3", "name": "Newsletter 3"}],
-            "more": False,
-        }
+    ]
 
-        mock_get.side_effect = [
-            Mock(json=lambda: first_response),
-            Mock(json=lambda: second_response),
-        ]
+    mock_response_3 = MagicMock()
+    mock_response_3.status_code = 200
+    mock_response_3.json.return_value = []
 
-        result = get_newsletters_in_category(category_id=1)
+    mock_get.side_effect = [mock_response_1, mock_response_2, mock_response_3]
 
-        self.assertEqual(len(result), 3)
-        self.assertEqual(result[0]["id"], "pub1")
-        self.assertEqual(result[2]["name"], "Newsletter 3")
-        self.assertEqual(mock_get.call_count, 2)
-        self.assertEqual(mock_sleep.call_count, 2)
+    newsletter = Newsletter(newsletter_url)
+    params = {"sort": "new"}
+    results = newsletter._fetch_paginated_posts(params)
 
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletters_in_category_subdomains_only(self, mock_sleep, mock_get):
-        mock_response = {
-            "publications": [
-                {"id": "pub1", "name": "Newsletter 1"},
-                {"id": "pub2", "name": "Newsletter 2"},
-            ],
-            "more": False,
-        }
+    # Check we made the expected number of API calls
+    assert mock_get.call_count == 3
 
-        mock_get.return_value = Mock(json=lambda: mock_response)
+    # Check we got the expected results (3 from first page + 1 from second)
+    assert len(results) == 4
 
-        result = get_newsletters_in_category(category_id=1, subdomains_only=True)
 
-        self.assertEqual(result, ["pub1", "pub2"])
-        mock_get.assert_called_once()
+@patch("substack_api.newsletter.requests.get")
+def test_fetch_paginated_posts_with_limit(mock_get, newsletter_url, mock_post_items):
+    # Set up mock
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = mock_post_items
+    mock_get.return_value = mock_response
 
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletters_in_category_page_limits(self, mock_sleep, mock_get):
-        mock_response = {
-            "publications": [{"id": "pub1", "name": "Newsletter 1"}],
-            "more": True,  # More pages exist, but we should stop due to end_page
-        }
+    newsletter = Newsletter(newsletter_url)
+    params = {"sort": "new"}
+    results = newsletter._fetch_paginated_posts(params, limit=2)
 
-        mock_get.return_value = Mock(json=lambda: mock_response)
+    # Check we only got the requested limit
+    assert len(results) == 2
+    assert isinstance(results[0], Post)
+    assert results[0].url == mock_post_items[0]["canonical_url"]
 
-        result = get_newsletters_in_category(category_id=1, start_page=1, end_page=2)
 
-        self.assertEqual(len(result), 1)
-        self.assertEqual(mock_get.call_count, 1)
+@patch("substack_api.newsletter.requests.get")
+def test_fetch_paginated_posts_error_response(mock_get, newsletter_url):
+    # Set up mock to return an error
+    mock_response = MagicMock()
+    mock_response.status_code = 404
+    mock_get.return_value = mock_response
+
+    newsletter = Newsletter(newsletter_url)
+    params = {"sort": "new"}
+    results = newsletter._fetch_paginated_posts(params)
+
+    # Should return empty list on error
+    assert results == []
+
+
+@patch("substack_api.newsletter.Newsletter._fetch_paginated_posts")
+def test_get_posts(mock_fetch, newsletter_url):
+    newsletter = Newsletter(newsletter_url)
+
+    # Test with default parameters
+    newsletter.get_posts()
+    mock_fetch.assert_called_once_with({"sort": "new"}, None)
+
+    # Test with custom parameters
+    mock_fetch.reset_mock()
+    newsletter.get_posts(sorting="top", limit=10)
+    mock_fetch.assert_called_once_with({"sort": "top"}, 10)
+
+
+@patch("substack_api.newsletter.Newsletter._fetch_paginated_posts")
+def test_search_posts(mock_fetch, newsletter_url):
+    newsletter = Newsletter(newsletter_url)
+
+    # Test search
+    newsletter.search_posts("test query")
+    mock_fetch.assert_called_once_with({"sort": "new", "search": "test query"}, None)
+
+    # Test with limit
+    mock_fetch.reset_mock()
+    newsletter.search_posts("test query", limit=5)
+    mock_fetch.assert_called_once_with({"sort": "new", "search": "test query"}, 5)
+
+
+@patch("substack_api.newsletter.Newsletter._fetch_paginated_posts")
+def test_get_podcasts(mock_fetch, newsletter_url):
+    newsletter = Newsletter(newsletter_url)
+
+    # Test podcast retrieval
+    newsletter.get_podcasts()
+    mock_fetch.assert_called_once_with({"sort": "new", "type": "podcast"}, None)
+
+    # Test with limit
+    mock_fetch.reset_mock()
+    newsletter.get_podcasts(limit=3)
+    mock_fetch.assert_called_once_with({"sort": "new", "type": "podcast"}, 3)
+
+
+@patch("substack_api.newsletter.requests.get")
+def test_get_recommendations_success(mock_get, newsletter_url, mock_recommendations):
+    # Mock the post fetch to return a publication ID
+    post_mock = MagicMock()
+    post_mock.get_metadata.return_value = {"publication_id": 123}
+
+    # First patch _fetch_paginated_posts to return our mocked post
+    with patch.object(Newsletter, "get_posts", return_value=[post_mock]):
+        # Then patch the recommendations API call
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.json.return_value = mock_recommendations
+        mock_get.return_value = mock_resp
+
+        newsletter = Newsletter(newsletter_url)
+        recommendations = newsletter.get_recommendations()
+
+        # Verify the API was called correctly
         mock_get.assert_called_once_with(
-            "https://substack.com/api/v1/category/public/1/all?page=1",
-            headers=HEADERS,
-            timeout=30,
+            f"{newsletter_url}/api/v1/recommendations/from/123",
+            headers=newsletter.HEADERS,
         )
 
-
-class TestGetNewsletterPostMetadata(unittest.TestCase):
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletter_post_metadata_slugs_only(self, mock_sleep, mock_get):
-        mock_get.return_value = Mock(
-            json=lambda: [
-                {"id": 1, "slug": "post-1"},
-                {"id": 2, "slug": "post-2"},
-            ]
-        )
-
-        result = get_newsletter_post_metadata("test_subdomain", slugs_only=True)
-        self.assertEqual(result, ["post-1", "post-2"])
-        mock_get.assert_called_once_with(
-            "https://test_subdomain.substack.com/api/v1/archive?sort=new&search=&offset=0&limit=10",
-            headers=HEADERS,
-            timeout=30,
-        )
-
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletter_post_metadata_all_metadata(self, mock_sleep, mock_get):
-        test_posts = [
-            {"id": 1, "slug": "post-1", "title": "Post 1"},
-            {"id": 2, "slug": "post-2", "title": "Post 2"},
-        ]
-        mock_get.return_value = Mock(json=lambda: test_posts)
-
-        result = get_newsletter_post_metadata("test_subdomain", slugs_only=False)
-        self.assertEqual(result, test_posts)
-
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletter_post_metadata_pagination(self, mock_sleep, mock_get):
-        first_page = [
-            {"id": 1, "slug": "post-1"},
-            {"id": 2, "slug": "post-2"},
-        ]
-
-        second_page = [
-            {"id": 3, "slug": "post-3"},
-            {"id": 4, "slug": "post-4"},
-        ]
-
-        empty_page = []
-
-        mock_get.side_effect = [
-            Mock(json=lambda: first_page),
-            Mock(json=lambda: second_page),
-            Mock(json=lambda: empty_page),
-        ]
-
-        result = get_newsletter_post_metadata(
-            "test_subdomain", slugs_only=True, start_offset=0, end_offset=30
-        )
-        self.assertEqual(result, ["post-1", "post-2", "post-3", "post-4"])
-        self.assertEqual(mock_get.call_count, 3)
-
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletter_post_metadata_same_last_id(self, mock_sleep, mock_get):
-        # Test case where last_id is the same (should break loop)
-        repeating_post = [{"id": 1, "slug": "post-1"}]
-        mock_get.return_value = Mock(json=lambda: repeating_post)
-
-        result = get_newsletter_post_metadata("test_subdomain")
-        self.assertEqual(result, [{"id": 1, "slug": "post-1"}])
-        self.assertEqual(
-            mock_get.call_count, 2
-        )  # Initial call + one more that returns same ID
-
-    @patch("requests.get")
-    @patch("time.sleep")
-    def test_get_newsletter_post_metadata_no_posts(self, mock_sleep, mock_get):
-        mock_get.return_value = Mock(json=lambda: [])
-
-        result = get_newsletter_post_metadata("test_subdomain")
-        self.assertEqual(result, [])
-        self.assertEqual(mock_get.call_count, 1)
+        # Verify we got the expected recommendations
+        assert len(recommendations) == 3
+        assert all(isinstance(rec, Newsletter) for rec in recommendations)
+        # Check URL formation with and without custom domains
+        assert recommendations[0].url == "newsletter1.substack.com"
+        assert recommendations[2].url == "https://custom.domain.com"
 
 
-class TestGetPostContents(unittest.TestCase):
-    @patch("requests.get")
-    def test_get_post_contents_html_only(self, mock_get):
-        mock_get.return_value = Mock(
-            json=lambda: {
-                "body_html": "<html><body>Test post</body></html>",
-                "title": "Test Title",
-            }
-        )
+@patch("substack_api.newsletter.Newsletter.get_posts")
+def test_get_recommendations_no_posts(mock_get_posts, newsletter_url):
+    # Mock empty post list
+    mock_get_posts.return_value = []
 
-        result = get_post_contents("test_subdomain", "test_slug", html_only=True)
-        self.assertEqual(result, "<html><body>Test post</body></html>")
-        mock_get.assert_called_once_with(
-            "https://test_subdomain.substack.com/api/v1/posts/test_slug",
-            headers=HEADERS,
-            timeout=30,
-        )
+    newsletter = Newsletter(newsletter_url)
+    recommendations = newsletter.get_recommendations()
 
-    @patch("requests.get")
-    def test_get_post_contents_all_metadata(self, mock_get):
-        post_data = {
-            "body_html": "<html><body>Test post</body></html>",
-            "title": "Test post",
-            "author": "Test author",
-            "date": "2022-01-01",
-        }
-        mock_get.return_value = Mock(json=lambda: post_data)
-
-        result = get_post_contents("test_subdomain", "test_slug", html_only=False)
-        self.assertEqual(result, post_data)
-
-    @patch("requests.get")
-    def test_get_post_contents_http_error(self, mock_get):
-        mock_get.side_effect = requests.exceptions.RequestException("API error")
-
-        with self.assertRaises(requests.exceptions.RequestException):
-            get_post_contents("test_subdomain", "test_slug")
+    # Should return empty list when no posts
+    assert recommendations == []
 
 
-class TestGetNewsletterRecommendations(unittest.TestCase):
-    def setUp(self):
-        self.html_content = """
-        <div class="publication-content">
-            <a href="https://url1.com?param=value">Link 1</a>
-        </div>
-        <div class="publication-content">
-            <a href="https://url2.com?param=value">Link 2</a>
-        </div>
-        <div class="publication-title">Title 1</div>
-        <div class="publication-title">Title 2</div>
-        """
+@patch("substack_api.newsletter.requests.get")
+def test_get_recommendations_error(mock_get, newsletter_url):
+    # Mock the post fetch
+    post_mock = MagicMock()
+    post_mock.get_metadata.return_value = {"publication_id": 123}
 
-    @patch("requests.get")
-    def test_get_newsletter_recommendations(self, mock_get):
-        mock_get.return_value = Mock(text=self.html_content)
+    with patch.object(Newsletter, "get_posts", return_value=[post_mock]):
+        # Mock error response for recommendations
+        mock_resp = MagicMock()
+        mock_resp.status_code = 404
+        mock_get.return_value = mock_resp
 
-        result = get_newsletter_recommendations("test_subdomain")
+        newsletter = Newsletter(newsletter_url)
+        recommendations = newsletter.get_recommendations()
 
-        mock_get.assert_called_once_with(
-            "https://test_subdomain.substack.com/recommendations",
-            headers=HEADERS,
-            timeout=30,
-        )
-
-        self.assertEqual(len(result), 2)
-        self.assertEqual(result[0]["title"], "Title 1")
-        self.assertEqual(result[0]["url"], "https://url1.com")
-        self.assertEqual(result[1]["title"], "Title 2")
-        self.assertEqual(result[1]["url"], "https://url2.com")
-
-    @patch("requests.get")
-    def test_get_newsletter_recommendations_empty(self, mock_get):
-        mock_get.return_value = Mock(text="<html></html>")
-
-        result = get_newsletter_recommendations("test_subdomain")
-        self.assertEqual(result, [])
+        # Should return empty list on error
+        assert recommendations == []
 
 
-if __name__ == "__main__":
-    unittest.main()
+@patch("substack_api.newsletter.requests.get")
+def test_get_authors(mock_get, newsletter_url, mock_authors):
+    # Set up mock
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = mock_authors
+    mock_get.return_value = mock_response
+
+    newsletter = Newsletter(newsletter_url)
+    authors = newsletter.get_authors()
+
+    # Check API call
+    expected_url = f"{newsletter_url}/api/v1/publication/users/ranked?public=true"
+    mock_get.assert_called_once_with(expected_url)
+
+    # Check results
+    assert len(authors) == 2
+    assert all(isinstance(author, User) for author in authors)
+    assert authors[0].handle == "author1"
+    assert authors[1].handle == "author2"
+
+
+@patch("substack_api.newsletter.requests.get")
+def test_get_authors_empty_response(mock_get, newsletter_url):
+    # Set up mock with empty response
+    mock_response = MagicMock()
+    mock_response.json.return_value = []
+    mock_get.return_value = mock_response
+
+    newsletter = Newsletter(newsletter_url)
+    authors = newsletter.get_authors()
+
+    # Should return empty list
+    assert authors == []

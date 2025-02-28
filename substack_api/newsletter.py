@@ -3,8 +3,6 @@ from typing import Dict, List, Optional
 
 import requests
 
-from substack_api import Post, User
-
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
@@ -26,7 +24,7 @@ class Newsletter:
 
     def _fetch_paginated_posts(
         self, params: Dict[str, str], limit: Optional[int] = None
-    ) -> List[Post]:
+    ) -> List[dict]:
         """
         Helper method to fetch paginated posts with different query parameters
 
@@ -35,7 +33,7 @@ class Newsletter:
             limit: Maximum number of posts to return
 
         Returns:
-            List of Post objects
+            List of post data dictionaries
         """
         results = []
         offset = 0
@@ -78,24 +76,50 @@ class Newsletter:
             # Be nice to the API
             sleep(0.5)
 
-        return [Post(item["canonical_url"]) for item in results]
+        # Instead of creating Post objects directly, return the URLs
+        # The caller will create Post objects as needed
+        return results
 
-    def get_posts(self, sorting: str = "new", limit: int = None) -> List[Post]:
-        """Get posts from the newsletter with specified sorting"""
+    def get_posts(self, sorting: str = "new", limit: int = None) -> List:
+        """
+        Get posts from the newsletter with specified sorting
+
+        Returns:
+            List of Post objects
+        """
+        from .post import Post  # Import here to avoid circular import
+
         params = {"sort": sorting}
-        return self._fetch_paginated_posts(params, limit)
+        post_data = self._fetch_paginated_posts(params, limit)
+        return [Post(item["canonical_url"]) for item in post_data]
 
-    def search_posts(self, query: str, limit: int = None) -> List[Post]:
-        """Search posts in the newsletter with the given query"""
+    def search_posts(self, query: str, limit: int = None) -> List:
+        """
+        Search posts in the newsletter with the given query
+
+        Returns:
+            List of Post objects
+        """
+        from .post import Post  # Import here to avoid circular import
+
         params = {"sort": "new", "search": query}
-        return self._fetch_paginated_posts(params, limit)
+        post_data = self._fetch_paginated_posts(params, limit)
+        return [Post(item["canonical_url"]) for item in post_data]
 
-    def get_podcasts(self, limit: int = None) -> List[Post]:
-        """Get podcast posts from the newsletter"""
+    def get_podcasts(self, limit: int = None) -> List:
+        """
+        Get podcast posts from the newsletter
+
+        Returns:
+            List of Post objects
+        """
+        from .post import Post  # Import here to avoid circular import
+
         params = {"sort": "new", "type": "podcast"}
-        return self._fetch_paginated_posts(params, limit)
+        post_data = self._fetch_paginated_posts(params, limit)
+        return [Post(item["canonical_url"]) for item in post_data]
 
-    def get_recommendations(self) -> List["Newsletter"]:
+    def get_recommendations(self):
         """
         Get recommended publications for this newsletter
 
@@ -127,11 +151,22 @@ class Newsletter:
             for rec in recommendations
         ]
 
+        # Avoid circular import
+        from .newsletter import Newsletter
+
         result = [Newsletter(url) for url in recommended_newsletter_urls]
 
         return result
 
-    def get_authors(self) -> List[User]:
+    def get_authors(self):
+        """
+        Get authors of the newsletter
+
+        Returns:
+            List of User objects
+        """
+        from .user import User  # Import here to avoid circular import
+
         r = requests.get(f"{self.url}/api/v1/publication/users/ranked?public=true")
         authors = r.json()
         return [User(author["handle"]) for author in authors]
