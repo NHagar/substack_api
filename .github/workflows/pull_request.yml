@@ -16,12 +16,7 @@ jobs:
       with:
         python-version: '3.12'
         cache: 'pip'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
-    
+
     - name: Lint with ruff
       run: |
         pip install ruff
@@ -29,4 +24,5 @@ jobs:
     
     - name: Test with pytest
       run: |
+        pip install pytest
         pytest
