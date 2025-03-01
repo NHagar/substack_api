@@ -148,12 +148,15 @@ class Newsletter:
         if not recommendations:
             return []
 
-        recommended_newsletter_urls = [
-            rec["custom_domain"]
-            if rec["custom_domain"]
-            else f"{rec['subdomain']}.substack.com"
-            for rec in recommendations
-        ]
+        recommended_newsletter_urls = []
+        for rec in recommendations:
+            recpub = rec["recommendedPublication"]
+            if "custom_domain" in recpub and recpub["custom_domain"]:
+                recommended_newsletter_urls.append(recpub["custom_domain"])
+            else:
+                recommended_newsletter_urls.append(
+                    f"{recpub['subdomain']}.substack.com"
+                )
 
         # Avoid circular import
         from .newsletter import Newsletter
