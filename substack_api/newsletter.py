@@ -84,6 +84,10 @@ class Newsletter:
         """
         Get posts from the newsletter with specified sorting
 
+        Args:
+            sorting: Sorting order for the posts ("new", "top", "pinned", or "community")
+            limit: Maximum number of posts to return
+
         Returns:
             List of Post objects
         """
