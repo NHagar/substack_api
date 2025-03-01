@@ -12,18 +12,26 @@ class User:
     User class for interacting with Substack user profiles
     """
 
-    def __init__(self, username: str):
+    def __init__(self, username: str) -> None:
+        """
+        Initialize a User object.
+
+        Parameters
+        ----------
+        username : str
+            The Substack username
+        """
         self.username = username
         self.endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
         self._user_data = None  # Cache for user data
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"User: {self.username}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"User(username={self.username})"
 
-    def _fetch_user_data(self, force_refresh: bool = False):
+    def _fetch_user_data(self, force_refresh: bool = False) -> Dict[str, Any]:
         """
         Fetch the raw user data from the API and cache it
 
@@ -34,7 +42,7 @@ class User:
 
         Returns
         -------
-        dict
+        Dict[str, Any]
             Full user profile data
         """
         if self._user_data is not None and not force_refresh:
@@ -46,7 +54,7 @@ class User:
         self._user_data = r.json()
         return self._user_data
 
-    def get_raw_data(self, force_refresh: bool = False):
+    def get_raw_data(self, force_refresh: bool = False) -> Dict[str, Any]:
         """
         Get the complete raw user data.
 
@@ -57,7 +65,7 @@ class User:
 
         Returns
         -------
-        dict
+        Dict[str, Any]
             Full user profile data
         """
         return self._fetch_user_data(force_refresh=force_refresh)

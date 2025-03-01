@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 
@@ -13,9 +13,15 @@ HEADERS = {
 def list_all_categories() -> List[Tuple[str, int]]:
     """
     Get name / id representations of all newsletter categories
+
+    Returns
+    -------
+    List[Tuple[str, int]]
+        List of tuples containing (category_name, category_id)
     """
     endpoint_cat = "https://substack.com/api/v1/categories"
     r = requests.get(endpoint_cat, headers=HEADERS, timeout=30)
+    r.raise_for_status()
     categories = [(i["name"], i["id"]) for i in r.json()]
     return categories
 
@@ -25,7 +31,25 @@ class Category:
     Top-level newsletter category
     """
 
-    def __init__(self, name: str = None, id: int = None):
+    def __init__(self, name: Optional[str] = None, id: Optional[int] = None) -> None:
+        """
+        Initialize a Category object.
+
+        Parameters
+        ----------
+        name : Optional[str]
+            The name of the category
+        id : Optional[int]
+            The ID of the category
+
+        Raises
+        ------
+        ValueError
+            If neither name nor id is provided, or if the provided name/id is not found
+        """
+        if name is None and id is None:
+            raise ValueError("Either name or id must be provided")
+
         self.name = name
         self.id = id
         self._newsletters_data = None  # Cache for newsletter data
@@ -36,15 +60,20 @@ class Category:
         elif self.id and self.name is None:
             self._get_name_from_id()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} ({self.id})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Category(name={self.name}, id={self.id})"
 
-    def _get_id_from_name(self):
+    def _get_id_from_name(self) -> None:
         """
         Lookup category ID based on name
+
+        Raises
+        ------
+        ValueError
+            If the category name is not found
         """
         categories = list_all_categories()
         for name, id in categories:
@@ -53,9 +82,14 @@ class Category:
                 return
         raise ValueError(f"Category name '{self.name}' not found")
 
-    def _get_name_from_id(self):
+    def _get_name_from_id(self) -> None:
         """
         Lookup category name based on ID
+
+        Raises
+        ------
+        ValueError
+            If the category ID is not found
         """
         categories = list_all_categories()
         for name, id in categories:

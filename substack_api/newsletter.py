@@ -1,5 +1,5 @@
 from time import sleep
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -13,26 +13,41 @@ class Newsletter:
     Newsletter class for interacting with Substack newsletters
     """
 
-    def __init__(self, url: str):
+    def __init__(self, url: str) -> None:
+        """
+        Initialize a Newsletter object.
+
+        Parameters
+        ----------
+        url : str
+            The URL of the Substack newsletter
+        """
         self.url = url
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Newsletter: {self.url}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Newsletter(url={self.url})"
 
     def _fetch_paginated_posts(
         self, params: Dict[str, str], limit: Optional[int] = None, page_size: int = 15
-    ) -> List[dict]:
+    ) -> List[Dict[str, Any]]:
         """
         Helper method to fetch paginated posts with different query parameters
 
-        Args:
-            params: Dictionary of query parameters to include in the API request
-            limit: Maximum number of posts to return
+        Parameters
+        ----------
+        params : Dict[str, str]
+            Dictionary of query parameters to include in the API request
+        limit : Optional[int]
+            Maximum number of posts to return
+        page_size : int
+            Number of posts to retrieve per page request
 
-        Returns:
+        Returns
+        -------
+        List[Dict[str, Any]]
             List of post data dictionaries
         """
         results = []
@@ -50,7 +65,7 @@ class Newsletter:
             endpoint = f"{self.url}/api/v1/archive?{query_string}"
 
             # Make the request
-            response = requests.get(endpoint, headers=HEADERS)
+            response = requests.get(endpoint, headers=HEADERS, timeout=30)
 
             if response.status_code != 200:
                 break
@@ -80,15 +95,22 @@ class Newsletter:
         # The caller will create Post objects as needed
         return results
 
-    def get_posts(self, sorting: str = "new", limit: int = None) -> List:
+    def get_posts(
+        self, sorting: str = "new", limit: Optional[int] = None
+    ) -> List["Post"]:
         """
         Get posts from the newsletter with specified sorting
 
-        Args:
-            sorting: Sorting order for the posts ("new", "top", "pinned", or "community")
-            limit: Maximum number of posts to return
+        Parameters
+        ----------
+        sorting : str
+            Sorting order for the posts ("new", "top", "pinned", or "community")
+        limit : Optional[int]
+            Maximum number of posts to return
 
-        Returns:
+        Returns
+        -------
+        List[Post]
             List of Post objects
         """
         from .post import Post  # Import here to avoid circular import
@@ -97,12 +119,21 @@ class Newsletter:
         post_data = self._fetch_paginated_posts(params, limit)
         return [Post(item["canonical_url"]) for item in post_data]
 
-    def search_posts(self, query: str, limit: int = None) -> List:
+    def search_posts(self, query: str, limit: Optional[int] = None) -> List["Post"]:
         """
         Search posts in the newsletter with the given query
 
-        Returns:
-            List of Post objects
+        Parameters
+        ----------
+        query : str
+            Search query string
+        limit : Optional[int]
+            Maximum number of posts to return
+
+        Returns
+        -------
+        List[Post]
+            List of Post objects matching the search query
         """
         from .post import Post  # Import here to avoid circular import
 
@@ -110,12 +141,19 @@ class Newsletter:
         post_data = self._fetch_paginated_posts(params, limit)
         return [Post(item["canonical_url"]) for item in post_data]
 
-    def get_podcasts(self, limit: int = None) -> List:
+    def get_podcasts(self, limit: Optional[int] = None) -> List["Post"]:
         """
         Get podcast posts from the newsletter
 
-        Returns:
-            List of Post objects
+        Parameters
+        ----------
+        limit : Optional[int]
+            Maximum number of podcast posts to return
+
+        Returns
+        -------
+        List[Post]
+            List of Post objects representing podcast posts
         """
         from .post import Post  # Import here to avoid circular import
 
@@ -123,12 +161,14 @@ class Newsletter:
         post_data = self._fetch_paginated_posts(params, limit)
         return [Post(item["canonical_url"]) for item in post_data]
 
-    def get_recommendations(self):
+    def get_recommendations(self) -> List["Newsletter"]:
         """
         Get recommended publications for this newsletter
 
-        Returns:
-            List of Newsletter objects
+        Returns
+        -------
+        List[Newsletter]
+            List of recommended Newsletter objects
         """
         # First get any post to extract the publication ID
         posts = self.get_posts(limit=1)
@@ -139,7 +179,7 @@ class Newsletter:
 
         # Now get the recommendations
         endpoint = f"{self.url}/api/v1/recommendations/from/{publication_id}"
-        response = requests.get(endpoint, headers=HEADERS)
+        response = requests.get(endpoint, headers=HEADERS, timeout=30)
 
         if response.status_code != 200:
             return []
@@ -165,15 +205,22 @@ class Newsletter:
 
         return result
 
-    def get_authors(self):
+    def get_authors(self) -> List["User"]:
         """
         Get authors of the newsletter
 
-        Returns:
-            List of User objects
+        Returns
+        -------
+        List[User]
+            List of User objects representing the authors
         """
         from .user import User  # Import here to avoid circular import
 
-        r = requests.get(f"{self.url}/api/v1/publication/users/ranked?public=true")
+        r = requests.get(
+            f"{self.url}/api/v1/publication/users/ranked?public=true",
+            headers=HEADERS,
+            timeout=30,
+        )
+        r.raise_for_status()
         authors = r.json()
         return [User(author["handle"]) for author in authors]
