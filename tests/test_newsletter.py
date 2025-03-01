@@ -18,7 +18,7 @@ class TestGetNewsletterPostMetadata(unittest.TestCase):
             {"id": 2, "slug": "post-2"},
         ]
 
-        result = get_newsletter_post_metadata("test_subdomain", slugs_only=True)
+        result = get_newsletter_post_metadata("test_subdomain.substack.com", slugs_only=True)
         self.assertEqual(result, ["post-1", "post-2"])
 
     @patch("requests.get")
@@ -29,7 +29,7 @@ class TestGetNewsletterPostMetadata(unittest.TestCase):
             {"id": 2, "slug": "post-2", "title": "Post 2"},
         ]
 
-        result = get_newsletter_post_metadata("test_subdomain", slugs_only=False)
+        result = get_newsletter_post_metadata("test_subdomain.substack.com", slugs_only=False)
         self.assertEqual(
             result,
             [
@@ -62,7 +62,7 @@ class TestGetNewsletterPostMetadata(unittest.TestCase):
         ]
 
         result = get_newsletter_post_metadata(
-            "test_subdomain", slugs_only=True, start_offset=0, end_offset=20
+            "test_subdomain.substack.com", slugs_only=True, start_offset=0, end_offset=20
         )
         self.assertEqual(result, ["post-1", "post-2", "post-3", "post-4"])
 
@@ -71,7 +71,7 @@ class TestGetNewsletterPostMetadata(unittest.TestCase):
         mock_get.return_value = Mock(ok=True)
         mock_get.return_value.json.return_value = []
 
-        result = get_newsletter_post_metadata("test_subdomain")
+        result = get_newsletter_post_metadata("test_subdomain.substack.com")
         self.assertEqual(result, [])
 
 
@@ -120,7 +120,7 @@ class TestGetPostContents(unittest.TestCase):
             "body_html": "<html><body>Test post</body></html>"
         }
 
-        result = get_post_contents("test_subdomain", "test_slug", html_only=True)
+        result = get_post_contents("test_subdomain.substack.com", "test_slug", html_only=True)
         self.assertEqual(result, "<html><body>Test post</body></html>")
 
     @patch("requests.get")
@@ -133,7 +133,7 @@ class TestGetPostContents(unittest.TestCase):
             "date": "2022-01-01",
         }
 
-        result = get_post_contents("test_subdomain", "test_slug", html_only=False)
+        result = get_post_contents("test_subdomain.substack.com", "test_slug", html_only=False)
         self.assertEqual(
             result,
             {
