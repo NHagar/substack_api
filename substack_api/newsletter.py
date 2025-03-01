@@ -95,9 +95,7 @@ class Newsletter:
         # The caller will create Post objects as needed
         return results
 
-    def get_posts(
-        self, sorting: str = "new", limit: Optional[int] = None
-    ) -> List["Post"]:
+    def get_posts(self, sorting: str = "new", limit: Optional[int] = None) -> List:
         """
         Get posts from the newsletter with specified sorting
 
@@ -119,7 +117,7 @@ class Newsletter:
         post_data = self._fetch_paginated_posts(params, limit)
         return [Post(item["canonical_url"]) for item in post_data]
 
-    def search_posts(self, query: str, limit: Optional[int] = None) -> List["Post"]:
+    def search_posts(self, query: str, limit: Optional[int] = None) -> List:
         """
         Search posts in the newsletter with the given query
 
@@ -141,7 +139,7 @@ class Newsletter:
         post_data = self._fetch_paginated_posts(params, limit)
         return [Post(item["canonical_url"]) for item in post_data]
 
-    def get_podcasts(self, limit: Optional[int] = None) -> List["Post"]:
+    def get_podcasts(self, limit: Optional[int] = None) -> List:
         """
         Get podcast posts from the newsletter
 
@@ -205,7 +203,7 @@ class Newsletter:
 
         return result
 
-    def get_authors(self) -> List["User"]:
+    def get_authors(self) -> List:
         """
         Get authors of the newsletter
 
