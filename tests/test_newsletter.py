@@ -35,9 +35,14 @@ def mock_post_items():
 @pytest.fixture
 def mock_recommendations():
     return [
-        {"subdomain": "newsletter1", "custom_domain": None},
-        {"subdomain": "newsletter2", "custom_domain": None},
-        {"subdomain": "newsletter3", "custom_domain": "https://custom.domain.com"},
+        {"recommendedPublication": {"subdomain": "newsletter1", "custom_domain": None}},
+        {"recommendedPublication": {"subdomain": "newsletter2", "custom_domain": None}},
+        {
+            "recommendedPublication": {
+                "subdomain": "newsletter3",
+                "custom_domain": "https://custom.domain.com",
+            }
+        },
     ]
 
 
@@ -73,8 +78,11 @@ def test_fetch_paginated_posts_single_page(mock_get, newsletter_url, mock_post_i
     results = newsletter._fetch_paginated_posts(params, limit=None)
 
     # Check we made the right API call
-    expected_url = f"{newsletter_url}/api/v1/archive?sort=new&offset=0&limit=15"
-    mock_get.assert_called_once_with(expected_url, headers=HEADERS)
+    mock_get.assert_called_once_with(
+        f"{newsletter_url}/api/v1/archive?sort=new&offset=0&limit=15",
+        headers=HEADERS,
+        timeout=30,
+    )
 
     # Check we got the expected results
     assert len(results) == 3
@@ -214,6 +222,7 @@ def test_get_recommendations_success(mock_get, newsletter_url, mock_recommendati
         mock_get.assert_called_once_with(
             f"{newsletter_url}/api/v1/recommendations/from/123",
             headers=HEADERS,
+            timeout=30,
         )
 
         # Verify we got the expected recommendations
@@ -268,7 +277,7 @@ def test_get_authors(mock_get, newsletter_url, mock_authors):
 
     # Check API call
     expected_url = f"{newsletter_url}/api/v1/publication/users/ranked?public=true"
-    mock_get.assert_called_once_with(expected_url)
+    mock_get.assert_called_once_with(expected_url, headers=HEADERS, timeout=30)
 
     # Check results
     assert len(authors) == 2
