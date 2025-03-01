@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from substack_api.category import Category, list_all_categories
+from substack_api.newsletter import Newsletter
 
 
 @pytest.fixture
@@ -214,6 +215,31 @@ def test_get_newsletter_urls(mock_fetch_data, mock_newsletters_data):
         "https://aiweekly.substack.com",
     ]
     mock_fetch_data.assert_called_once()
+
+
+@patch("substack_api.category.Category.get_newsletter_urls")
+def test_get_newsletters(mock_get_urls):
+    # Setup mock URLs to return
+    mock_urls = [
+        "https://techinsights.substack.com",
+        "https://futuretech.substack.com",
+        "https://aiweekly.substack.com",
+    ]
+    mock_get_urls.return_value = mock_urls
+
+    # Call the method
+    category = Category(name="Technology", id=1)
+    newsletters = category.get_newsletters()
+
+    # Verify the results
+    assert len(newsletters) == 3
+    assert all(isinstance(newsletter, Newsletter) for newsletter in newsletters)
+    assert newsletters[0].url == "https://techinsights.substack.com"
+    assert newsletters[1].url == "https://futuretech.substack.com"
+    assert newsletters[2].url == "https://aiweekly.substack.com"
+
+    # Verify get_newsletter_urls was called
+    mock_get_urls.assert_called_once()
 
 
 @patch("substack_api.category.Category._fetch_newsletters_data")

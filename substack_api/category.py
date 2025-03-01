@@ -2,6 +2,9 @@ from typing import Any, Dict, List, Tuple
 
 import requests
 
+# Add Newsletter import
+from .newsletter import Newsletter
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
@@ -101,18 +104,30 @@ class Category:
         self._newsletters_data = all_newsletters
         return all_newsletters
 
-    def get_newsletter_urls(self) -> List[int]:
+    def get_newsletter_urls(self) -> List[str]:
         """
         Get only the URLs of newsletters in this category
 
         Returns
         -------
-        List[int]
+        List[str]
             List of newsletter URLs
         """
         data = self._fetch_newsletters_data()
 
         return [item["base_url"] for item in data]
+
+    def get_newsletters(self) -> List[Newsletter]:
+        """
+        Get Newsletter objects for all newsletters in this category
+
+        Returns
+        -------
+        List[Newsletter]
+            List of Newsletter objects
+        """
+        urls = self.get_newsletter_urls()
+        return [Newsletter(url) for url in urls]
 
     def get_newsletter_metadata(self) -> List[Dict[str, Any]]:
         """
