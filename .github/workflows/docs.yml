@@ -41,14 +41,15 @@ jobs:
 
       - name: Configure Git user
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Deploy documentation
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: uv run mkdocs gh-deploy --force
+        run: |
+          uv run mkdocs gh-deploy --force
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build documentation (PR)
         if: github.event_name == 'pull_request'
