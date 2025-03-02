@@ -3,10 +3,10 @@ name: Deploy Documentation
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -34,7 +34,7 @@ jobs:
           git config --global user.email "github-actions@github.com"
 
       - name: Deploy documentation
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: mkdocs gh-deploy --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
