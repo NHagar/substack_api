@@ -6,7 +6,7 @@ The `Category` class provides access to Substack newsletter categories.
 
 ### `list_all_categories() -> List[Tuple[str, int]]`
 
-Get name / id representations of all newsletter categories.
+Get name/id representations of all newsletter categories.
 
 #### Returns
 
