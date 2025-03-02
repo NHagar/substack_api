@@ -1,178 +1,224 @@
-import math
 from time import sleep
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional
 
-from bs4 import BeautifulSoup
 import requests
-
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
 
 
-def list_all_categories() -> List[Tuple[str, int]]:
+class Newsletter:
     """
-    Get name / id representations of all newsletter categories
+    Newsletter class for interacting with Substack newsletters
     """
-    endpoint_cat = "https://substack.com/api/v1/categories"
-    r = requests.get(endpoint_cat, headers=HEADERS, timeout=30)
-    categories = [(i["name"], i["id"]) for i in r.json()]
-    return categories
 
+    def __init__(self, url: str) -> None:
+        """
+        Initialize a Newsletter object.
 
-def category_id_to_name(user_id: int) -> str:
-    """
-    Map a numerical category id to a name
+        Parameters
+        ----------
+        url : str
+            The URL of the Substack newsletter
+        """
+        self.url = url
 
-    Parameters
-    ----------
-    id : Numerical category identifier
-    """
-    categories = list_all_categories()
-    category_name = [i[0] for i in categories if i[1] == user_id]
-    if len(category_name) > 0:
-        return category_name[0]
+    def __str__(self) -> str:
+        return f"Newsletter: {self.url}"
 
-    raise ValueError(f"{user_id} is not in Substack's list of categories")
+    def __repr__(self) -> str:
+        return f"Newsletter(url={self.url})"
 
+    def _fetch_paginated_posts(
+        self, params: Dict[str, str], limit: Optional[int] = None, page_size: int = 15
+    ) -> List[Dict[str, Any]]:
+        """
+        Helper method to fetch paginated posts with different query parameters
 
-def category_name_to_id(name: str) -> int:
-    """
-    Map a category name to a numerical id
+        Parameters
+        ----------
+        params : Dict[str, str]
+            Dictionary of query parameters to include in the API request
+        limit : Optional[int]
+            Maximum number of posts to return
+        page_size : int
+            Number of posts to retrieve per page request
 
-    Parameters
-    ----------
-    name : Category name
-    """
-    categories = list_all_categories()
-    category_id = [i[1] for i in categories if i[0] == name]
-    if len(category_id) > 0:
-        return category_id[0]
-    else:
-        raise ValueError(f"{name} is not in Substack's list of categories")
+        Returns
+        -------
+        List[Dict[str, Any]]
+            List of post data dictionaries
+        """
+        results = []
+        offset = 0
+        batch_size = page_size  # The API default limit per request
+        more_items = True
 
+        while more_items:
+            # Update params with current offset and batch size
+            current_params = params.copy()
+            current_params.update({"offset": str(offset), "limit": str(batch_size)})
 
-def get_newsletters_in_category(
-    category_id: int,
-    subdomains_only: bool = False,
-    start_page: int = None,
-    end_page: int = None,
-) -> List:
-    """
-    Collects newsletter objects listed under specified category
+            # Format query parameters
+            query_string = "&".join([f"{k}={v}" for k, v in current_params.items()])
+            endpoint = f"{self.url}/api/v1/archive?{query_string}"
 
-    Parameters
-    ----------
-    category_id : Numerical category identifier
-    subdomains_only : Whether to return only newsletter subdomains (needed for post collection)
-    start_page : Start page for paginated API results
-    end_page : End page for paginated API results
-    """
-    page_num = 0 if start_page is None else start_page
-    page_num_end = math.inf if end_page is None else end_page
+            # Make the request
+            response = requests.get(endpoint, headers=HEADERS, timeout=30)
 
-    base_url = f"https://substack.com/api/v1/category/public/{category_id}/all?page="
-    page_num = 0
-    more = True
-    all_pubs = []
-    while more and page_num < page_num_end:
-        full_url = base_url + str(page_num)
-        pubs = requests.get(full_url, headers=HEADERS, timeout=30).json()
-        more = pubs["more"]
-        if subdomains_only:
-            pubs = [i["id"] for i in pubs["publications"]]
-        else:
-            pubs = pubs["publications"]
-        all_pubs.extend(pubs)
-        page_num += 1
-        print(f"page {page_num} done")
-        sleep(1)
+            if response.status_code != 200:
+                break
 
-    return all_pubs
+            items = response.json()
+            if not items:
+                break
 
+            results.extend(items)
 
-def get_newsletter_post_metadata(
-    newsletter_subdomain: str,
-    slugs_only: bool = False,
-    start_offset: int = None,
-    end_offset: int = None,
-) -> List:
-    """
-    Get available post metadata for newsletter
+            # Update offset for next batch
+            offset += batch_size
 
-    Parameters
-    ----------
-    newsletter_subdomain : Substack subdomain of newsletter
-    slugs_only : Whether to return only post slugs (needed for post content collection)
-    start_page : Start page for paginated API results
-    end_page : End page for paginated API results
-    """
-    offset_start = 0 if start_offset is None else start_offset
-    offset_end = math.inf if end_offset is None else end_offset
+            # Check if we've reached the requested limit
+            if limit and len(results) >= limit:
+                results = results[:limit]
+                more_items = False
 
-    last_id_ref = 0
-    all_posts = []
-    while offset_start < offset_end:
-        full_url = f"https://{newsletter_subdomain}.substack.com/api/v1/archive?sort=new&search=&offset={offset_start}&limit=10"
-        posts = requests.get(full_url, headers=HEADERS, timeout=30).json()
+            # Check if we got fewer items than requested (last page)
+            if len(items) < batch_size:
+                more_items = False
 
-        if len(posts) == 0:
-            break
+            # Be nice to the API
+            sleep(0.5)
 
-        last_id = posts[-1]["id"]
-        if last_id == last_id_ref:
-            break
+        # Instead of creating Post objects directly, return the URLs
+        # The caller will create Post objects as needed
+        return results
 
-        last_id_ref = last_id
+    def get_posts(self, sorting: str = "new", limit: Optional[int] = None) -> List:
+        """
+        Get posts from the newsletter with specified sorting
 
-        if slugs_only:
-            all_posts.extend([i["slug"] for i in posts])
-        else:
-            all_posts.extend(posts)
+        Parameters
+        ----------
+        sorting : str
+            Sorting order for the posts ("new", "top", "pinned", or "community")
+        limit : Optional[int]
+            Maximum number of posts to return
 
-        offset_start += 10
-        sleep(1)
+        Returns
+        -------
+        List[Post]
+            List of Post objects
+        """
+        from .post import Post  # Import here to avoid circular import
 
-    return all_posts
+        params = {"sort": sorting}
+        post_data = self._fetch_paginated_posts(params, limit)
+        return [Post(item["canonical_url"]) for item in post_data]
 
+    def search_posts(self, query: str, limit: Optional[int] = None) -> List:
+        """
+        Search posts in the newsletter with the given query
 
-def get_post_contents(
-    newsletter_subdomain: str, slug: str, html_only: bool = False
-) -> Union[Dict, str]:
-    """
-    Gets individual post metadata and contents
+        Parameters
+        ----------
+        query : str
+            Search query string
+        limit : Optional[int]
+            Maximum number of posts to return
 
-    Parameters
-    ----------
-    newsletter_subdomain : Substack subdomain of newsletter
-    slug : Slug of post to retrieve (can be retrieved from `get_newsletter_post_metadata`)
-    html_only : Whether to get only HTML of body text, or all metadata/content
-    """
-    endpoint = f"https://{newsletter_subdomain}.substack.com/api/v1/posts/{slug}"
-    post_info = requests.get(endpoint, headers=HEADERS, timeout=30).json()
-    if html_only:
-        return post_info["body_html"]
+        Returns
+        -------
+        List[Post]
+            List of Post objects matching the search query
+        """
+        from .post import Post  # Import here to avoid circular import
 
-    return post_info
+        params = {"sort": "new", "search": query}
+        post_data = self._fetch_paginated_posts(params, limit)
+        return [Post(item["canonical_url"]) for item in post_data]
 
+    def get_podcasts(self, limit: Optional[int] = None) -> List:
+        """
+        Get podcast posts from the newsletter
 
-def get_newsletter_recommendations(newsletter_subdomain: str) -> List[Dict[str, str]]:
-    """
-    Gets recommended newsletters for a given newsletter
+        Parameters
+        ----------
+        limit : Optional[int]
+            Maximum number of podcast posts to return
 
-    Parameters
-    ----------
-    newsletter_subdomain : Substack subdomain of newsletter
-    """
-    endpoint = f"https://{newsletter_subdomain}.substack.com/recommendations"
-    r = requests.get(endpoint, headers=HEADERS, timeout=30)
-    recs = r.text
-    soup = BeautifulSoup(recs, "html.parser")
-    div_elements = soup.find_all("div", class_="publication-content")
-    a_elements = [div.find("a") for div in div_elements]
-    titles = [i.text for i in soup.find_all("div", {"class": "publication-title"})]
-    links = [i["href"].split("?")[0] for i in a_elements]
-    results = [{"title": t, "url": u} for t, u in zip(titles, links)]
+        Returns
+        -------
+        List[Post]
+            List of Post objects representing podcast posts
+        """
+        from .post import Post  # Import here to avoid circular import
 
-    return results
+        params = {"sort": "new", "type": "podcast"}
+        post_data = self._fetch_paginated_posts(params, limit)
+        return [Post(item["canonical_url"]) for item in post_data]
+
+    def get_recommendations(self) -> List["Newsletter"]:
+        """
+        Get recommended publications for this newsletter
+
+        Returns
+        -------
+        List[Newsletter]
+            List of recommended Newsletter objects
+        """
+        # First get any post to extract the publication ID
+        posts = self.get_posts(limit=1)
+        if not posts:
+            return []
+
+        publication_id = posts[0].get_metadata()["publication_id"]
+
+        # Now get the recommendations
+        endpoint = f"{self.url}/api/v1/recommendations/from/{publication_id}"
+        response = requests.get(endpoint, headers=HEADERS, timeout=30)
+
+        if response.status_code != 200:
+            return []
+
+        recommendations = response.json()
+        if not recommendations:
+            return []
+
+        recommended_newsletter_urls = []
+        for rec in recommendations:
+            recpub = rec["recommendedPublication"]
+            if "custom_domain" in recpub and recpub["custom_domain"]:
+                recommended_newsletter_urls.append(recpub["custom_domain"])
+            else:
+                recommended_newsletter_urls.append(
+                    f"{recpub['subdomain']}.substack.com"
+                )
+
+        # Avoid circular import
+        from .newsletter import Newsletter
+
+        result = [Newsletter(url) for url in recommended_newsletter_urls]
+
+        return result
+
+    def get_authors(self) -> List:
+        """
+        Get authors of the newsletter
+
+        Returns
+        -------
+        List[User]
+            List of User objects representing the authors
+        """
+        from .user import User  # Import here to avoid circular import
+
+        r = requests.get(
+            f"{self.url}/api/v1/publication/users/ranked?public=true",
+            headers=HEADERS,
+            timeout=30,
+        )
+        r.raise_for_status()
+        authors = r.json()
+        return [User(author["handle"]) for author in authors]
