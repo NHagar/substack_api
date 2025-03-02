@@ -59,8 +59,6 @@ nav:
     - Newsletter: api-reference/newsletter.md
     - Post: api-reference/post.md
     - Category: api-reference/category.md
-  - Examples: examples.md
-  - Contributing: contributing.md
 
 # Extra CSS
 extra_css:
