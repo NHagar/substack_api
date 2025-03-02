@@ -133,7 +133,6 @@ class Category:
             all_newsletters.extend(newsletters)
             page_num += 1
             more = resp["more"]
-            print(f"page {page_num} done")
 
         self._newsletters_data = all_newsletters
         return all_newsletters
