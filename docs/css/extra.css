@@ -1,0 +1,16 @@
+/* Custom styles for the documentation */
+.md-typeset h1 {
+    font-weight: 600;
+    color: #000;
+}
+
+.md-typeset code {
+    padding: .2em .4em;
+    border-radius: 3px;
+}
+
+.md-typeset .admonition {
+    margin: 1.5625em auto;
+    border-left: .2rem solid #448aff;
+    border-radius: .1rem;
+}
