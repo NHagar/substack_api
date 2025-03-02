@@ -1,0 +1,84 @@
+site_name: Substack API
+site_url: https://nhagar.github.io/substack_api/
+site_author: Nick Hagar
+site_description: An unofficial Python library for interacting with Substack.
+
+# Repository
+repo_name: nhagar/substack_api
+repo_url: https://github.com/nhagar/substack_api
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright &copy; 2025 Nick Hagar
+
+# Theme configuration
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: indigo
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      linenums: true
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+# Plugins
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          rendering:
+            show_source: true
+      watch:
+        - ../substack_api
+
+# Navigation structure
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - User Guide: user-guide.md
+  - API Reference:
+    - Overview: api-reference/index.md
+    - User: api-reference/user.md
+    - Newsletter: api-reference/newsletter.md
+    - Post: api-reference/post.md
+    - Category: api-reference/category.md
+  - Examples: examples.md
+  - Contributing: contributing.md
+
+# Extra CSS
+extra_css:
+  - css/extra.css
+
+# GitHub Pages deployment
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nhagar/substack_api
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/substack-api/
+  version:
+    provider: mike
