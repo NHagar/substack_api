@@ -134,6 +134,41 @@ name = user.name
 subscriptions = user.get_subscriptions()
 ```
 
+#### Handling Renamed Accounts
+Substack allows users to change their handle (username) at any time. When this happens, the old API endpoints return 404 errors. This library automatically handles these redirects by default.
+##### Automatic Redirect Handling
+
+```python
+from substack_api import User
+
+# This will automatically follow redirects if the handle has changed
+user = User("oldhandle")  # Will find the user even if they renamed to "newhandle"
+
+# Check if a redirect occurred
+if user.was_redirected:
+    print(f"User was renamed from {user.original_username} to {user.username}")
+```
+
+##### Disable Redirect Following
+
+If you prefer to handle 404s yourself:
+
+```python
+# Disable automatic redirect following
+user = User("oldhandle", follow_redirects=False)
+```
+
+##### Manual Handle Resolution
+
+You can also manually resolve handle redirects:
+
+```python
+from substack_api import resolve_handle_redirect
+
+new_handle = resolve_handle_redirect("oldhandle")
+if new_handle:
+    print(f"Handle was renamed to: {new_handle}")
+```
 ## Limitations
 
 - This is an unofficial library and not endorsed by Substack
