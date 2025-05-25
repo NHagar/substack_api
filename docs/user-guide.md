@@ -71,6 +71,9 @@ from substack_api import User
 # Create a user object
 user = User("username")
 
+# Create a user object without redirect handling (if a handle has been renamed)
+user = User("username", follow_redirects=False)
+
 # Get basic user information
 user_id = user.id
 name = user.name
@@ -80,6 +83,23 @@ subscriptions = user.get_subscriptions()
 
 # Get raw user data
 user_data = user.get_raw_data()
+
+# Check if the user was redirected (handle was renamed)
+if user.was_redirected:
+    print(f"Original handle '{user.original_username}' was redirected to '{user.username}'")
+```
+
+### Handle Redirects
+
+Substack users sometimes change handles. The `User` class automatically handles these redirects by default:
+
+```python
+# This will work even if "old_username" has been renamed to "new_username"
+user = User("old_username")  # follow_redirects=True by default
+
+# Check if a redirect happened
+if user.was_redirected:
+    print(f"User was redirected from {user.original_username} to {user.username}")
 ```
 
 ## Working with Posts
