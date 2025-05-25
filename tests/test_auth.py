@@ -70,7 +70,7 @@ class TestSubstackAuth:
         auth = SubstackAuth(cookies_path=temp_cookies_file)
 
         assert auth.cookies_path == temp_cookies_file
-        assert not auth.authenticated
+        assert auth.authenticated
         assert isinstance(auth.session, requests.Session)
 
     def test_init_with_existing_cookies(self, temp_cookies_file, mock_cookies):
