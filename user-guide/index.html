@@ -468,6 +468,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Working with Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handle-redirects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handle Redirects
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -796,6 +811,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Working with Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handle-redirects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handle Redirects
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -927,6 +957,9 @@
 <span class="c1"># Create a user object</span>
 <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">)</span>
 
+<span class="c1"># Create a user object without redirect handling (if a handle has been renamed)</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
 <span class="c1"># Get basic user information</span>
 <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
 <span class="n">name</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span>
@@ -936,6 +969,19 @@
 
 <span class="c1"># Get raw user data</span>
 <span class="n">user_data</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">()</span>
+
+<span class="c1"># Check if the user was redirected (handle was renamed)</span>
+<span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">was_redirected</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original handle &#39;</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">original_username</span><span class="si">}</span><span class="s2">&#39; was redirected to &#39;</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="handle-redirects">Handle Redirects<a class="headerlink" href="#handle-redirects" title="Permanent link">&para;</a></h3>
+<p>Substack users sometimes change handles. The <code>User</code> class automatically handles these redirects by default:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># This will work even if &quot;old_username&quot; has been renamed to &quot;new_username&quot;</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;old_username&quot;</span><span class="p">)</span>  <span class="c1"># follow_redirects=True by default</span>
+
+<span class="c1"># Check if a redirect happened</span>
+<span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">was_redirected</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User was redirected from </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">original_username</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="working-with-posts">Working with Posts<a class="headerlink" href="#working-with-posts" title="Permanent link">&para;</a></h2>
 <p>The <code>Post</code> class allows you to access information about individual Substack posts:</p>
