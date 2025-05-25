@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Optional
 
 import requests
 
+from substack_api.auth import SubstackAuth
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
@@ -13,7 +15,7 @@ class Newsletter:
     Newsletter class for interacting with Substack newsletters
     """
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, auth: Optional[SubstackAuth] = None) -> None:
         """
         Initialize a Newsletter object.
 
@@ -21,14 +23,38 @@ class Newsletter:
         ----------
         url : str
             The URL of the Substack newsletter
+        auth : Optional[SubstackAuth]
+            Authentication handler for accessing paywalled content
         """
         self.url = url
+        self.auth = auth
 
     def __str__(self) -> str:
         return f"Newsletter: {self.url}"
 
     def __repr__(self) -> str:
         return f"Newsletter(url={self.url})"
+
+    def _make_request(self, endpoint: str, **kwargs) -> requests.Response:
+        """
+        Make a GET request to the specified endpoint with authentication if needed.
+
+        Parameters
+        ----------
+        endpoint : str
+            The API endpoint to request
+        **kwargs : Any
+            Additional parameters for the request
+
+        Returns
+        -------
+        requests.Response
+            The response object from the request
+        """
+        if self.auth and self.auth.authenticated:
+            return self.auth.get(endpoint, **kwargs)
+        else:
+            return requests.get(endpoint, headers=HEADERS, **kwargs)
 
     def _fetch_paginated_posts(
         self, params: Dict[str, str], limit: Optional[int] = None, page_size: int = 15
@@ -65,7 +91,7 @@ class Newsletter:
             endpoint = f"{self.url}/api/v1/archive?{query_string}"
 
             # Make the request
-            response = requests.get(endpoint, headers=HEADERS, timeout=30)
+            response = self._make_request(endpoint, timeout=30)
 
             if response.status_code != 200:
                 break
@@ -115,7 +141,7 @@ class Newsletter:
 
         params = {"sort": sorting}
         post_data = self._fetch_paginated_posts(params, limit)
-        return [Post(item["canonical_url"]) for item in post_data]
+        return [Post(item["canonical_url"], auth=self.auth) for item in post_data]
 
     def search_posts(self, query: str, limit: Optional[int] = None) -> List:
         """
@@ -137,7 +163,7 @@ class Newsletter:
 
         params = {"sort": "new", "search": query}
         post_data = self._fetch_paginated_posts(params, limit)
-        return [Post(item["canonical_url"]) for item in post_data]
+        return [Post(item["canonical_url"], auth=self.auth) for item in post_data]
 
     def get_podcasts(self, limit: Optional[int] = None) -> List:
         """
@@ -157,7 +183,7 @@ class Newsletter:
 
         params = {"sort": "new", "type": "podcast"}
         post_data = self._fetch_paginated_posts(params, limit)
-        return [Post(item["canonical_url"]) for item in post_data]
+        return [Post(item["canonical_url"], auth=self.auth) for item in post_data]
 
     def get_recommendations(self) -> List["Newsletter"]:
         """
@@ -177,7 +203,7 @@ class Newsletter:
 
         # Now get the recommendations
         endpoint = f"{self.url}/api/v1/recommendations/from/{publication_id}"
-        response = requests.get(endpoint, headers=HEADERS, timeout=30)
+        response = self._make_request(endpoint, timeout=30)
 
         if response.status_code != 200:
             return []
@@ -199,7 +225,9 @@ class Newsletter:
         # Avoid circular import
         from .newsletter import Newsletter
 
-        result = [Newsletter(url) for url in recommended_newsletter_urls]
+        result = [
+            Newsletter(url, auth=self.auth) for url in recommended_newsletter_urls
+        ]
 
         return result
 
@@ -214,11 +242,8 @@ class Newsletter:
         """
         from .user import User  # Import here to avoid circular import
 
-        r = requests.get(
-            f"{self.url}/api/v1/publication/users/ranked?public=true",
-            headers=HEADERS,
-            timeout=30,
-        )
+        endpoint = f"{self.url}/api/v1/publication/users/ranked?public=true"
+        r = self._make_request(endpoint, timeout=30)
         r.raise_for_status()
         authors = r.json()
         return [User(author["handle"]) for author in authors]
