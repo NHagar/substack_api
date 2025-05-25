@@ -21,6 +21,3 @@ dev = [
 "Homepage" = "https://github.com/nhagar/substack_api"
 "Bug Tracker" = "https://github.com/nhagar/substack_api/issues"
 "Documentation" = "https://nhagar.github.io/substack_api/"
-
-[project.optional-dependencies]
-auth = ["selenium>=4.33.0"]
