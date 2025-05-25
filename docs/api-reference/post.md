@@ -5,12 +5,13 @@ The `Post` class provides access to individual Substack posts.
 ## Class Definition
 
 ```python
-Post(url: str)
+Post(url: str, auth: Optional[SubstackAuth] = None)
 ```
 
 ### Parameters
 
 - `url` (str): The URL of the Substack post
+- `auth` (Optional[SubstackAuth]): Authentication handler for accessing paywalled content
 
 ## Methods
 
@@ -48,12 +49,20 @@ Get the HTML content of the post.
 
 #### Returns
 
-- `Optional[str]`: HTML content of the post, or None if not available
+- `Optional[str]`: HTML content of the post, or None if not available (e.g., for paywalled content without authentication)
+
+### `is_paywalled() -> bool`
+
+Check if the post is paywalled.
+
+#### Returns
+
+- `bool`: True if the post requires a subscription to access full content
 
 ## Example Usage
 
 ```python
-from substack_api import Post
+from substack_api import Post, SubstackAuth
 
 # Create a post object
 post = Post("https://example.substack.com/p/post-slug")
@@ -63,11 +72,22 @@ metadata = post.get_metadata()
 print(f"Title: {metadata['title']}")
 print(f"Published: {metadata['post_date']}")
 
-# Get post content
-content = post.get_content()
+# Check if the post is paywalled
+if post.is_paywalled():
+    print("This post is paywalled")
+    
+    # Set up authentication to access paywalled content
+    auth = SubstackAuth(cookies_path="cookies.json")
+    authenticated_post = Post("https://example.substack.com/p/post-slug", auth=auth)
+    content = authenticated_post.get_content()
+else:
+    # Public content - no authentication needed
+    content = post.get_content()
+
 print(f"Content length: {len(content) if content else 0}")
 
-# Check if the post is paywalled
-is_paywalled = metadata.get("audience") == "only_paid"
-print(f"Paywalled: {is_paywalled}")
+# Alternative: Create post with authentication from the start
+auth = SubstackAuth(cookies_path="cookies.json")
+authenticated_post = Post("https://example.substack.com/p/paywalled-post", auth=auth)
+content = authenticated_post.get_content()  # Works for both public and paywalled content
 ```

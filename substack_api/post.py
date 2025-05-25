@@ -3,6 +3,8 @@ from urllib.parse import urlparse
 
 import requests
 
+from substack_api.auth import SubstackAuth
+
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
@@ -13,7 +15,7 @@ class Post:
     A class to represent a Substack post.
     """
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, auth: Optional[SubstackAuth] = None) -> None:
         """
         Initialize a Post object.
 
@@ -21,8 +23,11 @@ class Post:
         ----------
         url : str
             The URL of the Substack post
+        auth : Optional[SubstackAuth]
+            Authentication handler for accessing paywalled content
         """
         self.url = url
+        self.auth = auth
         parsed_url = urlparse(url)
         self.base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
         path_parts = parsed_url.path.strip("/").split("/")
@@ -55,7 +60,11 @@ class Post:
         if self._post_data is not None and not force_refresh:
             return self._post_data
 
-        r = requests.get(self.endpoint, headers=HEADERS, timeout=30)
+        # Use authenticated session if available
+        if self.auth and self.auth.authenticated:
+            r = self.auth.get(self.endpoint, timeout=30)
+        else:
+            r = requests.get(self.endpoint, headers=HEADERS, timeout=30)
         r.raise_for_status()
 
         self._post_data = r.json()
@@ -92,4 +101,24 @@ class Post:
             HTML content of the post, or None if not available
         """
         data = self._fetch_post_data(force_refresh=force_refresh)
-        return data.get("body_html")
+        content = data.get("body_html")
+
+        # Check if content is paywalled and we don't have auth
+        if not content and data.get("audience") == "only_paid" and not self.auth:
+            print(
+                "Warning: This post is paywalled. Provide authentication to access full content."
+            )
+
+        return content
+
+    def is_paywalled(self) -> bool:
+        """
+        Check if the post is paywalled.
+
+        Returns
+        -------
+        bool
+            True if post is paywalled
+        """
+        data = self._fetch_post_data()
+        return data.get("audience") == "only_paid"

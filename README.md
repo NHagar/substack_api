@@ -10,6 +10,7 @@ This library provides Python interfaces for interacting with Substack's unoffici
 - Get user profile information and subscriptions
 - Fetch post content and metadata
 - Search for posts within newsletters
+- Access paywalled content **that you have written or paid for** with user-provided authentication
 
 ## Installation
 
@@ -65,6 +66,55 @@ metadata = post.get_metadata()
 content = post.get_content()
 ```
 
+### Accessing Paywalled Content with Authentication
+
+To access paywalled content, you need to provide your own session cookies from a logged-in Substack session:
+
+```python
+from substack_api import Newsletter, Post, SubstackAuth
+
+# Set up authentication with your cookies
+auth = SubstackAuth(cookies_path="path/to/your/cookies.json")
+
+# Use authentication with newsletters
+newsletter = Newsletter("https://example.substack.com", auth=auth)
+posts = newsletter.get_posts(limit=5)  # Can now access paywalled posts
+
+# Use authentication with individual posts
+post = Post("https://example.substack.com/p/paywalled-post", auth=auth)
+content = post.get_content()  # Can now access paywalled content
+
+# Check if a post is paywalled
+if post.is_paywalled():
+    print("This post requires a subscription")
+```
+
+#### Getting Your Cookies
+
+To access paywalled content, you need to export your browser cookies from a logged-in Substack session. The cookies should be in JSON format with the following structure:
+
+```json
+[
+  {
+    "name": "substack.sid",
+    "value": "your_session_id",
+    "domain": ".substack.com",
+    "path": "/",
+    "secure": true
+  },
+  {
+    "name": "substack.lli", 
+    "value": "your_lli_value",
+    "domain": ".substack.com",
+    "path": "/",
+    "secure": true
+  },
+  ...
+]
+```
+
+**Important**: Only use your own cookies from your own authenticated session. **This feature is intended for users to access their own subscribed or authored content programmatically.**
+
 ### Working with Users
 
 ```python
@@ -88,8 +138,9 @@ subscriptions = user.get_subscriptions()
 
 - This is an unofficial library and not endorsed by Substack
 - APIs may change without notice, potentially breaking functionality
-- Some features may only work for public content
 - Rate limiting may be enforced by Substack
+- **Authentication requires users to provide their own session cookies**
+- **Users are responsible for complying with Substack's terms of service when using authentication features**
 
 ## Development
 
