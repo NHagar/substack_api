@@ -54,9 +54,9 @@ class SubstackAuth:
             with open(self.cookies_path, "r") as f:
                 cookies = json.load(f)
 
-            for name, cookie in cookies.items():
+            for cookie in cookies:
                 self.session.cookies.set(
-                    name,
+                    cookie["name"],
                     cookie["value"],
                     domain=cookie.get("domain"),
                     path=cookie.get("path", "/"),

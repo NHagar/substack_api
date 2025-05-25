@@ -4,3 +4,4 @@ dist/
 .env
 .vscode/
 .DS_Store
+*.json
