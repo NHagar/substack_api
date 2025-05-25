@@ -12,13 +12,11 @@
         <meta name="author" content="Nick Hagar">
       
       
-        <link rel="canonical" href="https://nhagar.github.io/substack_api/api-reference/category/">
+        <link rel="canonical" href="https://nhagar.github.io/substack_api/api-reference/auth/">
       
       
-        <link rel="prev" href="../post/">
+        <link rel="prev" href="../category/">
       
-      
-        <link rel="next" href="../auth/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +24,7 @@
     
     
       
-        <title>Category - Substack API</title>
+        <title>SubstackAuth - Substack API</title>
       
     
     
@@ -80,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#category" class="md-skip">
+        <a href="#substackauth" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Category
+              SubstackAuth
             
           </span>
         </div>
@@ -554,6 +552,28 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../category/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Category
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -570,7 +590,7 @@
           
   
   <span class="md-ellipsis">
-    Category
+    SubstackAuth
     
   </span>
   
@@ -582,7 +602,7 @@
         
   
   <span class="md-ellipsis">
-    Category
+    SubstackAuth
     
   </span>
   
@@ -605,45 +625,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#module-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Module Functions
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Module Functions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#list_all_categories-listtuplestr-int" class="md-nav__link">
-    <span class="md-ellipsis">
-      list_all_categories() -&gt; List[Tuple[str, int]]
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="list_all_categories() -> List[Tuple[str, int]]">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#class-definition" class="md-nav__link">
     <span class="md-ellipsis">
       Class Definition
@@ -662,10 +643,43 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#raises" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
-      Raises
+      Properties
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authenticated-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      authenticated (bool)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cookies_path-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      cookies_path (str)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-requestssession" class="md-nav__link">
+    <span class="md-ellipsis">
+      session (requests.Session)
     </span>
   </a>
   
@@ -687,19 +701,19 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_get_id_from_name-none" class="md-nav__link">
+  <a href="#load_cookies-bool" class="md-nav__link">
     <span class="md-ellipsis">
-      _get_id_from_name() -&gt; None
+      load_cookies() -&gt; bool
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="_get_id_from_name() -> None">
+    <nav class="md-nav" aria-label="load_cookies() -> bool">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#raises_1" class="md-nav__link">
+  <a href="#returns" class="md-nav__link">
     <span class="md-ellipsis">
-      Raises
+      Returns
     </span>
   </a>
   
@@ -711,37 +725,13 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_get_name_from_id-none" class="md-nav__link">
+  <a href="#geturl-str-kwargs-requestsresponse" class="md-nav__link">
     <span class="md-ellipsis">
-      _get_name_from_id() -&gt; None
+      get(url: str, **kwargs) -&gt; requests.Response
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="_get_name_from_id() -> None">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#raises_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Raises
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_fetch_newsletters_dataforce_refresh-bool-false-listdictstr-any" class="md-nav__link">
-    <span class="md-ellipsis">
-      _fetch_newsletters_data(force_refresh: bool = False) -&gt; List[Dict[str, Any]]
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="_fetch_newsletters_data(force_refresh: bool = False) -> List[Dict[str, Any]]">
+    <nav class="md-nav" aria-label="get(url: str, **kwargs) -> requests.Response">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -768,14 +758,23 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_newsletter_urls-liststr" class="md-nav__link">
+  <a href="#posturl-str-kwargs-requestsresponse" class="md-nav__link">
     <span class="md-ellipsis">
-      get_newsletter_urls() -&gt; List[str]
+      post(url: str, **kwargs) -&gt; requests.Response
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="get_newsletter_urls() -> List[str]">
+    <nav class="md-nav" aria-label="post(url: str, **kwargs) -> requests.Response">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#returns_2" class="md-nav__link">
@@ -791,63 +790,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#get_newsletters-listnewsletter" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_newsletters() -&gt; List[Newsletter]
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="get_newsletters() -> List[Newsletter]">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#returns_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get_newsletter_metadata-listdictstr-any" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_newsletter_metadata() -&gt; List[Dict[str, Any]]
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="get_newsletter_metadata() -> List[Dict[str, Any]]">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#returns_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#refresh_data-none" class="md-nav__link">
-    <span class="md-ellipsis">
-      refresh_data() -&gt; None
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -860,34 +802,72 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Example Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-authentication-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Authentication Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-with-newsletter-and-post-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using with Newsletter and Post Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-authenticated-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manual Authenticated Requests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cookie-file-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cookie File Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Notes
+    </span>
+  </a>
+  
 </li>
       
     </ul>
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../auth/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    SubstackAuth
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -927,45 +907,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#module-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Module Functions
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Module Functions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#list_all_categories-listtuplestr-int" class="md-nav__link">
-    <span class="md-ellipsis">
-      list_all_categories() -&gt; List[Tuple[str, int]]
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="list_all_categories() -> List[Tuple[str, int]]">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#returns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#class-definition" class="md-nav__link">
     <span class="md-ellipsis">
       Class Definition
@@ -984,10 +925,43 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#raises" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
-      Raises
+      Properties
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Properties">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authenticated-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      authenticated (bool)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cookies_path-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      cookies_path (str)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-requestssession" class="md-nav__link">
+    <span class="md-ellipsis">
+      session (requests.Session)
     </span>
   </a>
   
@@ -1009,19 +983,19 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_get_id_from_name-none" class="md-nav__link">
+  <a href="#load_cookies-bool" class="md-nav__link">
     <span class="md-ellipsis">
-      _get_id_from_name() -&gt; None
+      load_cookies() -&gt; bool
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="_get_id_from_name() -> None">
+    <nav class="md-nav" aria-label="load_cookies() -> bool">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#raises_1" class="md-nav__link">
+  <a href="#returns" class="md-nav__link">
     <span class="md-ellipsis">
-      Raises
+      Returns
     </span>
   </a>
   
@@ -1033,37 +1007,13 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_get_name_from_id-none" class="md-nav__link">
+  <a href="#geturl-str-kwargs-requestsresponse" class="md-nav__link">
     <span class="md-ellipsis">
-      _get_name_from_id() -&gt; None
+      get(url: str, **kwargs) -&gt; requests.Response
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="_get_name_from_id() -> None">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#raises_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Raises
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_fetch_newsletters_dataforce_refresh-bool-false-listdictstr-any" class="md-nav__link">
-    <span class="md-ellipsis">
-      _fetch_newsletters_data(force_refresh: bool = False) -&gt; List[Dict[str, Any]]
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="_fetch_newsletters_data(force_refresh: bool = False) -> List[Dict[str, Any]]">
+    <nav class="md-nav" aria-label="get(url: str, **kwargs) -> requests.Response">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1090,14 +1040,23 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_newsletter_urls-liststr" class="md-nav__link">
+  <a href="#posturl-str-kwargs-requestsresponse" class="md-nav__link">
     <span class="md-ellipsis">
-      get_newsletter_urls() -&gt; List[str]
+      post(url: str, **kwargs) -&gt; requests.Response
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="get_newsletter_urls() -> List[str]">
+    <nav class="md-nav" aria-label="post(url: str, **kwargs) -> requests.Response">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#returns_2" class="md-nav__link">
@@ -1113,58 +1072,43 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#get_newsletters-listnewsletter" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_newsletters() -&gt; List[Newsletter]
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="get_newsletters() -> List[Newsletter]">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#returns_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      Returns
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#get_newsletter_metadata-listdictstr-any" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      get_newsletter_metadata() -&gt; List[Dict[str, Any]]
+      Example Usage
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="get_newsletter_metadata() -> List[Dict[str, Any]]">
+    <nav class="md-nav" aria-label="Example Usage">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#returns_4" class="md-nav__link">
+  <a href="#basic-authentication-setup" class="md-nav__link">
     <span class="md-ellipsis">
-      Returns
+      Basic Authentication Setup
     </span>
   </a>
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#using-with-newsletter-and-post-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using with Newsletter and Post Classes
+    </span>
+  </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#refresh_data-none" class="md-nav__link">
+  <a href="#manual-authenticated-requests" class="md-nav__link">
     <span class="md-ellipsis">
-      refresh_data() -&gt; None
+      Manual Authenticated Requests
     </span>
   </a>
   
@@ -1176,9 +1120,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-usage" class="md-nav__link">
+  <a href="#cookie-file-format" class="md-nav__link">
     <span class="md-ellipsis">
-      Example Usage
+      Cookie File Format
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Notes
     </span>
   </a>
   
@@ -1203,99 +1165,137 @@
   
 
 
-<h1 id="category">Category<a class="headerlink" href="#category" title="Permanent link">&para;</a></h1>
-<p>The <code>Category</code> class provides access to Substack newsletter categories.</p>
-<h2 id="module-functions">Module Functions<a class="headerlink" href="#module-functions" title="Permanent link">&para;</a></h2>
-<h3 id="list_all_categories-listtuplestr-int"><code>list_all_categories() -&gt; List[Tuple[str, int]]</code><a class="headerlink" href="#list_all_categories-listtuplestr-int" title="Permanent link">&para;</a></h3>
-<p>Get name/id representations of all newsletter categories.</p>
-<h4 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>List[Tuple[str, int]]</code>: List of tuples containing (category_name, category_id)</li>
-</ul>
+<h1 id="substackauth">SubstackAuth<a class="headerlink" href="#substackauth" title="Permanent link">&para;</a></h1>
+<p>The <code>SubstackAuth</code> class handles authentication for accessing paywalled Substack content.</p>
 <h2 id="class-definition">Class Definition<a class="headerlink" href="#class-definition" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="n">Category</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>name</code> (Optional[str]): The name of the category</li>
-<li><code>id</code> (Optional[int]): The ID of the category</li>
+<li><code>cookies_path</code> (str): Path to the JSON file containing session cookies</li>
 </ul>
-<h3 id="raises">Raises<a class="headerlink" href="#raises" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>ValueError</code>: If neither name nor id is provided, or if the provided name/id is not found</li>
-</ul>
+<h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h2>
+<h3 id="authenticated-bool"><code>authenticated</code> (bool)<a class="headerlink" href="#authenticated-bool" title="Permanent link">&para;</a></h3>
+<p>Whether the authentication was successful and cookies were loaded.</p>
+<h3 id="cookies_path-str"><code>cookies_path</code> (str)<a class="headerlink" href="#cookies_path-str" title="Permanent link">&para;</a></h3>
+<p>Path to the cookies file.</p>
+<h3 id="session-requestssession"><code>session</code> (requests.Session)<a class="headerlink" href="#session-requestssession" title="Permanent link">&para;</a></h3>
+<p>The authenticated requests session object.</p>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
-<h3 id="_get_id_from_name-none"><code>_get_id_from_name() -&gt; None</code><a class="headerlink" href="#_get_id_from_name-none" title="Permanent link">&para;</a></h3>
-<p>Lookup category ID based on name.</p>
-<h4 id="raises_1">Raises<a class="headerlink" href="#raises_1" title="Permanent link">&para;</a></h4>
+<h3 id="load_cookies-bool"><code>load_cookies() -&gt; bool</code><a class="headerlink" href="#load_cookies-bool" title="Permanent link">&para;</a></h3>
+<p>Load cookies from the specified file.</p>
+<h4 id="returns">Returns<a class="headerlink" href="#returns" title="Permanent link">&para;</a></h4>
 <ul>
-<li><code>ValueError</code>: If the category name is not found</li>
+<li><code>bool</code>: True if cookies were loaded successfully, False otherwise</li>
 </ul>
-<h3 id="_get_name_from_id-none"><code>_get_name_from_id() -&gt; None</code><a class="headerlink" href="#_get_name_from_id-none" title="Permanent link">&para;</a></h3>
-<p>Lookup category name based on ID.</p>
-<h4 id="raises_2">Raises<a class="headerlink" href="#raises_2" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>ValueError</code>: If the category ID is not found</li>
-</ul>
-<h3 id="_fetch_newsletters_dataforce_refresh-bool-false-listdictstr-any"><code>_fetch_newsletters_data(force_refresh: bool = False) -&gt; List[Dict[str, Any]]</code><a class="headerlink" href="#_fetch_newsletters_dataforce_refresh-bool-false-listdictstr-any" title="Permanent link">&para;</a></h3>
-<p>Fetch the raw newsletter data from the API and cache it.</p>
+<h3 id="geturl-str-kwargs-requestsresponse"><code>get(url: str, **kwargs) -&gt; requests.Response</code><a class="headerlink" href="#geturl-str-kwargs-requestsresponse" title="Permanent link">&para;</a></h3>
+<p>Make an authenticated GET request.</p>
 <h4 id="parameters_1">Parameters<a class="headerlink" href="#parameters_1" title="Permanent link">&para;</a></h4>
 <ul>
-<li><code>force_refresh</code> (bool): Whether to force a refresh of the data, ignoring the cache</li>
+<li><code>url</code> (str): The URL to request</li>
+<li><code>**kwargs</code>: Additional arguments passed to requests.get</li>
 </ul>
 <h4 id="returns_1">Returns<a class="headerlink" href="#returns_1" title="Permanent link">&para;</a></h4>
 <ul>
-<li><code>List[Dict[str, Any]]</code>: Full newsletter metadata</li>
+<li><code>requests.Response</code>: The response object</li>
 </ul>
-<h3 id="get_newsletter_urls-liststr"><code>get_newsletter_urls() -&gt; List[str]</code><a class="headerlink" href="#get_newsletter_urls-liststr" title="Permanent link">&para;</a></h3>
-<p>Get only the URLs of newsletters in this category.</p>
+<h3 id="posturl-str-kwargs-requestsresponse"><code>post(url: str, **kwargs) -&gt; requests.Response</code><a class="headerlink" href="#posturl-str-kwargs-requestsresponse" title="Permanent link">&para;</a></h3>
+<p>Make an authenticated POST request.</p>
+<h4 id="parameters_2">Parameters<a class="headerlink" href="#parameters_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>url</code> (str): The URL to request</li>
+<li><code>**kwargs</code>: Additional arguments passed to requests.post</li>
+</ul>
 <h4 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h4>
 <ul>
-<li><code>List[str]</code>: List of newsletter URLs</li>
+<li><code>requests.Response</code>: The response object</li>
 </ul>
-<h3 id="get_newsletters-listnewsletter"><code>get_newsletters() -&gt; List[Newsletter]</code><a class="headerlink" href="#get_newsletters-listnewsletter" title="Permanent link">&para;</a></h3>
-<p>Get Newsletter objects for all newsletters in this category.</p>
-<h4 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>List[Newsletter]</code>: List of Newsletter objects</li>
-</ul>
-<h3 id="get_newsletter_metadata-listdictstr-any"><code>get_newsletter_metadata() -&gt; List[Dict[str, Any]]</code><a class="headerlink" href="#get_newsletter_metadata-listdictstr-any" title="Permanent link">&para;</a></h3>
-<p>Get full metadata for all newsletters in this category.</p>
-<h4 id="returns_4">Returns<a class="headerlink" href="#returns_4" title="Permanent link">&para;</a></h4>
-<ul>
-<li><code>List[Dict[str, Any]]</code>: List of newsletter metadata dictionaries</li>
-</ul>
-<h3 id="refresh_data-none"><code>refresh_data() -&gt; None</code><a class="headerlink" href="#refresh_data-none" title="Permanent link">&para;</a></h3>
-<p>Force refresh of the newsletter data cache.</p>
 <h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Category</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">substack_api.category</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_all_categories</span>
+<h3 id="basic-authentication-setup">Basic Authentication Setup<a class="headerlink" href="#basic-authentication-setup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubstackAuth</span>
 
-<span class="c1"># List all available categories</span>
-<span class="n">categories</span> <span class="o">=</span> <span class="n">list_all_categories</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available categories:&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (ID: </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="c1"># Initialize with cookies file</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;my_cookies.json&quot;</span><span class="p">)</span>
 
-<span class="c1"># Create a category object by name</span>
-<span class="n">tech_category</span> <span class="o">=</span> <span class="n">Category</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Technology&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected category: </span><span class="si">{</span><span class="n">tech_category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Get newsletters in this category</span>
-<span class="n">newsletters</span> <span class="o">=</span> <span class="n">tech_category</span><span class="o">.</span><span class="n">get_newsletters</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">newsletters</span><span class="p">)</span><span class="si">}</span><span class="s2"> newsletters in </span><span class="si">{</span><span class="n">tech_category</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> category&quot;</span><span class="p">)</span>
-
-<span class="c1"># Print the first 5 newsletters</span>
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">newsletter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">newsletters</span><span class="p">[:</span><span class="mi">5</span><span class="p">]):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">newsletter</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="c1"># Get detailed metadata</span>
-<span class="n">metadata</span> <span class="o">=</span> <span class="n">tech_category</span><span class="o">.</span><span class="n">get_newsletter_metadata</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Newsletter ID: </span><span class="si">{</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Description: </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;No description&#39;</span><span class="p">)[:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+<span class="c1"># Check if authentication succeeded</span>
+<span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">authenticated</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully authenticated!&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authentication failed&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h3 id="using-with-newsletter-and-post-classes">Using with Newsletter and Post Classes<a class="headerlink" href="#using-with-newsletter-and-post-classes" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Newsletter</span><span class="p">,</span> <span class="n">Post</span><span class="p">,</span> <span class="n">SubstackAuth</span>
+
+<span class="c1"># Set up authentication</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Use with Newsletter</span>
+<span class="n">newsletter</span> <span class="o">=</span> <span class="n">Newsletter</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+<span class="n">posts</span> <span class="o">=</span> <span class="n">newsletter</span><span class="o">.</span><span class="n">get_posts</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Use with Post</span>
+<span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/paywalled-post&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+<span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="manual-authenticated-requests">Manual Authenticated Requests<a class="headerlink" href="#manual-authenticated-requests" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubstackAuth</span>
+
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Make authenticated GET request</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/api/v1/posts/123&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+<span class="c1"># Make authenticated POST request</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s2">&quot;https://example.substack.com/api/v1/some-endpoint&quot;</span><span class="p">,</span>
+    <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div>
+<h2 id="cookie-file-format">Cookie File Format<a class="headerlink" href="#cookie-file-format" title="Permanent link">&para;</a></h2>
+<p>The cookies file should be in JSON format with the following structure:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;substack.sid&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your_session_id&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;domain&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;.substack.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;secure&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;substack.lli&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your_lli_value&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;domain&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;.substack.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;secure&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="p">]</span>
+</code></pre></div>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p>The <code>SubstackAuth</code> class handles several error conditions:</p>
+<ul>
+<li><strong>File not found</strong>: If the cookies file doesn't exist, <code>authenticated</code> will be <code>False</code></li>
+<li><strong>Invalid JSON</strong>: If the cookies file contains invalid JSON, <code>load_cookies()</code> returns <code>False</code></li>
+<li><strong>Missing cookies</strong>: If required cookies are missing, authentication may fail silently</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubstackAuth</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">auth</span><span class="o">.</span><span class="n">authenticated</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authentication failed - check your cookies file&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error setting up authentication: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="security-notes">Security Notes<a class="headerlink" href="#security-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Keep your cookies file secure and private</li>
+<li>Don't commit cookies files to version control</li>
+<li>Only use your own session cookies</li>
+<li>Cookies may expire and need to be refreshed periodically</li>
+<li>Respect Substack's Terms of Service when using authentication</li>
+</ul>
 
 
 

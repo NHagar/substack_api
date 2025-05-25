@@ -253,6 +253,23 @@
         
   
   
+  
+    <li class="md-tabs__item">
+      <a href="../../authentication/" class="md-tabs__link">
+        
+  
+    
+  
+  Authentication
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
     
   
   
@@ -382,6 +399,27 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../authentication/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authentication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -402,10 +440,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -417,8 +455,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -803,6 +841,28 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auth/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SubstackAuth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1086,11 +1146,12 @@
 <h1 id="newsletter">Newsletter<a class="headerlink" href="#newsletter" title="Permanent link">&para;</a></h1>
 <p>The <code>Newsletter</code> class provides access to Substack publications.</p>
 <h2 id="class-definition">Class Definition<a class="headerlink" href="#class-definition" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="n">Newsletter</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">Newsletter</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">auth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SubstackAuth</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>url</code> (str): The URL of the Substack newsletter</li>
+<li><code>auth</code> (Optional[SubstackAuth]): Authentication handler for accessing paywalled content</li>
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h3 id="_fetch_paginated_postsparams-dictstr-str-limit-optionalint-none-page_size-int-15-listdictstr-any"><code>_fetch_paginated_posts(params: Dict[str, str], limit: Optional[int] = None, page_size: int = 15) -&gt; List[Dict[str, Any]]</code><a class="headerlink" href="#_fetch_paginated_postsparams-dictstr-str-limit-optionalint-none-page_size-int-15-listdictstr-any" title="Permanent link">&para;</a></h3>
@@ -1150,7 +1211,7 @@
 <li><code>List[User]</code>: List of User objects representing the authors</li>
 </ul>
 <h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Newsletter</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Newsletter</span><span class="p">,</span> <span class="n">SubstackAuth</span>
 
 <span class="c1"># Create a newsletter object</span>
 <span class="n">newsletter</span> <span class="o">=</span> <span class="n">Newsletter</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com&quot;</span><span class="p">)</span>
@@ -1182,6 +1243,15 @@
 <span class="n">recommendations</span> <span class="o">=</span> <span class="n">newsletter</span><span class="o">.</span><span class="n">get_recommendations</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">recommendations</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recommended: </span><span class="si">{</span><span class="n">rec</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Use with authentication for paywalled content</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+<span class="n">authenticated_newsletter</span> <span class="o">=</span> <span class="n">Newsletter</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+<span class="n">paywalled_posts</span> <span class="o">=</span> <span class="n">authenticated_newsletter</span><span class="o">.</span><span class="n">get_posts</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">paywalled_posts</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">post</span><span class="o">.</span><span class="n">is_paywalled</span><span class="p">():</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>  <span class="c1"># Now accessible with auth</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Paywalled content: </span><span class="si">{</span><span class="n">content</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 

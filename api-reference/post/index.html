@@ -253,6 +253,23 @@
         
   
   
+  
+    <li class="md-tabs__item">
+      <a href="../../authentication/" class="md-tabs__link">
+        
+  
+    
+  
+  Authentication
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
     
   
   
@@ -382,6 +399,27 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../authentication/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authentication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -402,10 +440,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -417,8 +455,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -677,6 +715,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#is_paywalled-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_paywalled() -&gt; bool
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="is_paywalled() -> bool">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#returns_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -712,6 +774,28 @@
   
   <span class="md-ellipsis">
     Category
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auth/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SubstackAuth
     
   </span>
   
@@ -888,6 +972,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#is_paywalled-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_paywalled() -&gt; bool
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="is_paywalled() -> bool">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#returns_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -924,11 +1032,12 @@
 <h1 id="post">Post<a class="headerlink" href="#post" title="Permanent link">&para;</a></h1>
 <p>The <code>Post</code> class provides access to individual Substack posts.</p>
 <h2 id="class-definition">Class Definition<a class="headerlink" href="#class-definition" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="n">Post</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">Post</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">auth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SubstackAuth</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>url</code> (str): The URL of the Substack post</li>
+<li><code>auth</code> (Optional[SubstackAuth]): Authentication handler for accessing paywalled content</li>
 </ul>
 <h2 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h2>
 <h3 id="_fetch_post_dataforce_refresh-bool-false-dictstr-any"><code>_fetch_post_data(force_refresh: bool = False) -&gt; Dict[str, Any]</code><a class="headerlink" href="#_fetch_post_dataforce_refresh-bool-false-dictstr-any" title="Permanent link">&para;</a></h3>
@@ -959,10 +1068,16 @@
 </ul>
 <h4 id="returns_2">Returns<a class="headerlink" href="#returns_2" title="Permanent link">&para;</a></h4>
 <ul>
-<li><code>Optional[str]</code>: HTML content of the post, or None if not available</li>
+<li><code>Optional[str]</code>: HTML content of the post, or None if not available (e.g., for paywalled content without authentication)</li>
+</ul>
+<h3 id="is_paywalled-bool"><code>is_paywalled() -&gt; bool</code><a class="headerlink" href="#is_paywalled-bool" title="Permanent link">&para;</a></h3>
+<p>Check if the post is paywalled.</p>
+<h4 id="returns_3">Returns<a class="headerlink" href="#returns_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>bool</code>: True if the post requires a subscription to access full content</li>
 </ul>
 <h2 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Post</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Post</span><span class="p">,</span> <span class="n">SubstackAuth</span>
 
 <span class="c1"># Create a post object</span>
 <span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/post-slug&quot;</span><span class="p">)</span>
@@ -972,13 +1087,24 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Title: </span><span class="si">{</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Published: </span><span class="si">{</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;post_date&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># Get post content</span>
-<span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+<span class="c1"># Check if the post is paywalled</span>
+<span class="k">if</span> <span class="n">post</span><span class="o">.</span><span class="n">is_paywalled</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This post is paywalled&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Set up authentication to access paywalled content</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+    <span class="n">authenticated_post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/post-slug&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">authenticated_post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Public content - no authentication needed</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># Check if the post is paywalled</span>
-<span class="n">is_paywalled</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;audience&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;only_paid&quot;</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Paywalled: </span><span class="si">{</span><span class="n">is_paywalled</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Alternative: Create post with authentication from the start</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+<span class="n">authenticated_post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/paywalled-post&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+<span class="n">content</span> <span class="o">=</span> <span class="n">authenticated_post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>  <span class="c1"># Works for both public and paywalled content</span>
 </code></pre></div>
 
 

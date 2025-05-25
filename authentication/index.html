@@ -12,13 +12,13 @@
         <meta name="author" content="Nick Hagar">
       
       
-        <link rel="canonical" href="https://nhagar.github.io/substack_api/installation/">
+        <link rel="canonical" href="https://nhagar.github.io/substack_api/authentication/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../user-guide/">
       
       
-        <link rel="next" href="../user-guide/">
+        <link rel="next" href="../api-reference/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Installation - Substack API</title>
+        <title>Authentication - Substack API</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation" class="md-skip">
+        <a href="#authentication" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              Authentication
             
           </span>
         </div>
@@ -219,11 +219,9 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
         
   
     
@@ -255,9 +253,11 @@
         
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../authentication/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
     
@@ -357,31 +357,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Installation
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -391,62 +370,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      Requirements
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#install-from-pypi" class="md-nav__link">
-    <span class="md-ellipsis">
-      Install from PyPI
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#install-from-source" class="md-nav__link">
-    <span class="md-ellipsis">
-      Install from Source
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dependencies" class="md-nav__link">
-    <span class="md-ellipsis">
-      Dependencies
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -476,10 +399,31 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../authentication/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Authentication
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -489,6 +433,170 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting Up Authentication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting Up Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-export-your-cookies" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Export Your Cookies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-create-authentication-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Create Authentication Object
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Authentication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-newsletter-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      With Newsletter Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-post-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      With Post Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-paywall-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checking Paywall Status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-get-your-cookies" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Get Your Cookies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Get Your Cookies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-browser-developer-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Browser Developer Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-browser-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Browser Extensions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Reference
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -700,36 +808,144 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Requirements
+      Overview
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-from-pypi" class="md-nav__link">
+  <a href="#setting-up-authentication" class="md-nav__link">
     <span class="md-ellipsis">
-      Install from PyPI
+      Setting Up Authentication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting Up Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-export-your-cookies" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Export Your Cookies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-create-authentication-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Create Authentication Object
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Authentication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using Authentication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#with-newsletter-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      With Newsletter Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-post-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      With Post Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-paywall-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checking Paywall Status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-get-your-cookies" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to Get Your Cookies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Get Your Cookies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-browser-developer-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Browser Developer Tools
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-browser-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Browser Extensions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-from-source" class="md-nav__link">
+  <a href="#error-handling" class="md-nav__link">
     <span class="md-ellipsis">
-      Install from Source
+      Error Handling
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#dependencies" class="md-nav__link">
+  <a href="#api-reference" class="md-nav__link">
     <span class="md-ellipsis">
-      Dependencies
+      API Reference
     </span>
   </a>
   
@@ -754,26 +970,149 @@
   
 
 
-<h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
-<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
+<h1 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h1>
+<p>The Substack API library supports authentication to access paywalled content. This feature allows users to access their own subscribed content programmatically by providing their session cookies from a logged-in Substack session.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Authentication in the Substack API library works by:</p>
+<ol>
+<li>Loading session cookies from a JSON file</li>
+<li>Using those cookies to make authenticated requests</li>
+<li>Automatically handling authentication for both <code>Newsletter</code> and <code>Post</code> objects</li>
+</ol>
+<h2 id="setting-up-authentication">Setting Up Authentication<a class="headerlink" href="#setting-up-authentication" title="Permanent link">&para;</a></h2>
+<h3 id="1-export-your-cookies">1. Export Your Cookies<a class="headerlink" href="#1-export-your-cookies" title="Permanent link">&para;</a></h3>
+<p>To use authentication, you need to export your browser cookies from a logged-in Substack session. The cookies should be saved in JSON format with this structure:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;substack.sid&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your_session_id_here&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;domain&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;.substack.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;secure&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;substack.lli&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your_lli_value_here&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;domain&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;.substack.com&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;secure&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="p">]</span>
+</code></pre></div>
+<h3 id="2-create-authentication-object">2. Create Authentication Object<a class="headerlink" href="#2-create-authentication-object" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubstackAuth</span>
+
+<span class="c1"># Initialize with path to your cookies file</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;path/to/your/cookies.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check if authentication was successful</span>
+<span class="k">if</span> <span class="n">auth</span><span class="o">.</span><span class="n">authenticated</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authentication successful!&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authentication failed - check your cookies file&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="using-authentication">Using Authentication<a class="headerlink" href="#using-authentication" title="Permanent link">&para;</a></h2>
+<h3 id="with-newsletter-objects">With Newsletter Objects<a class="headerlink" href="#with-newsletter-objects" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Newsletter</span><span class="p">,</span> <span class="n">SubstackAuth</span>
+
+<span class="c1"># Set up authentication</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create authenticated newsletter</span>
+<span class="n">newsletter</span> <span class="o">=</span> <span class="n">Newsletter</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+
+<span class="c1"># All posts retrieved will use authentication</span>
+<span class="n">posts</span> <span class="o">=</span> <span class="n">newsletter</span><span class="o">.</span><span class="n">get_posts</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Access paywalled content</span>
+<span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">posts</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">post</span><span class="o">.</span><span class="n">is_paywalled</span><span class="p">():</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>  <span class="c1"># Now accessible with auth</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Paywalled content: </span><span class="si">{</span><span class="n">content</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="with-post-objects">With Post Objects<a class="headerlink" href="#with-post-objects" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Post</span><span class="p">,</span> <span class="n">SubstackAuth</span>
+
+<span class="c1"># Set up authentication</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create authenticated post</span>
+<span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/paywalled-post&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+
+<span class="c1"># Check if post is paywalled</span>
+<span class="k">if</span> <span class="n">post</span><span class="o">.</span><span class="n">is_paywalled</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This post is paywalled&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get content (will use authentication if needed)</span>
+<span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="checking-paywall-status">Checking Paywall Status<a class="headerlink" href="#checking-paywall-status" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Post</span>
+
+<span class="c1"># Create post object (no auth needed to check paywall status)</span>
+<span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/some-post&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check if authentication is required</span>
+<span class="k">if</span> <span class="n">post</span><span class="o">.</span><span class="n">is_paywalled</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This post requires authentication to access full content&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Now add authentication to access content</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubstackAuth</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+    <span class="n">authenticated_post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">authenticated_post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Public content - no authentication needed</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="how-to-get-your-cookies">How to Get Your Cookies<a class="headerlink" href="#how-to-get-your-cookies" title="Permanent link">&para;</a></h2>
+<h3 id="method-1-browser-developer-tools">Method 1: Browser Developer Tools<a class="headerlink" href="#method-1-browser-developer-tools" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Log in to Substack in your browser</li>
+<li>Open Developer Tools (F12 or right-click → Inspect)</li>
+<li>Go to the Application/Storage tab</li>
+<li>Find "Cookies" → "https://substack.com"</li>
+<li>Export their values to a JSON file in the required format</li>
+</ol>
+<h3 id="method-2-browser-extensions">Method 2: Browser Extensions<a class="headerlink" href="#method-2-browser-extensions" title="Permanent link">&para;</a></h3>
+<p>You can use browser extensions that export cookies to JSON format. Make sure to:
+- Only export cookies for the <code>.substack.com</code> domain
+- Save in the JSON format shown above</p>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<p><strong>Important Security Notes:</strong></p>
 <ul>
-<li>Python 3.7 or higher</li>
-<li>pip (Python package installer)</li>
+<li><strong>Only use your own cookies</strong> from your own authenticated session</li>
+<li><strong>Keep your cookies file secure</strong> - treat it like a password</li>
+<li><strong>Don't share your cookies</strong> with others or commit them to version control</li>
+<li><strong>Cookies may expire</strong> - you may need to refresh them periodically</li>
+<li><strong>Respect Substack's Terms of Service</strong> when using authentication features</li>
 </ul>
-<h2 id="install-from-pypi">Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Permanent link">&para;</a></h2>
-<p>The simplest way to install the Substack API library is via pip:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>substack-api
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubstackAuth</span><span class="p">,</span> <span class="n">Post</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Attempt to load authentication</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">auth</span><span class="o">.</span><span class="n">authenticated</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: Authentication failed, using public access only&quot;</span><span class="p">)</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Use authentication if available</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/some-post&quot;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">content</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">post</span><span class="o">.</span><span class="n">is_paywalled</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This content is paywalled and requires authentication&quot;</span><span class="p">)</span>
+
+<span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cookies file not found - using public access only&quot;</span><span class="p">)</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="s2">&quot;https://example.substack.com/p/some-post&quot;</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">get_content</span><span class="p">()</span>
 </code></pre></div>
-<h2 id="install-from-source">Install from Source<a class="headerlink" href="#install-from-source" title="Permanent link">&para;</a></h2>
-<p>Alternatively, you can install from source:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/nhagar/substack_api.git
-<span class="nb">cd</span><span class="w"> </span>substack_api
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-</code></pre></div>
-<h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h2>
-<p>The library has minimal dependencies:
-- <code>requests</code> - For making HTTP requests</p>
-<p>These dependencies will be automatically installed when you install the package.</p>
+<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<p>See the <a href="../api-reference/auth/">SubstackAuth API documentation</a> for detailed information about the authentication class and its methods.</p>
 
 
 
