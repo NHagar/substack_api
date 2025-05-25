@@ -53,12 +53,14 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - User Guide: user-guide.md
+  - Authentication: authentication.md
   - API Reference:
-    - Overview: api-reference/index.md
-    - User: api-reference/user.md
-    - Newsletter: api-reference/newsletter.md
-    - Post: api-reference/post.md
-    - Category: api-reference/category.md
+      - Overview: api-reference/index.md
+      - User: api-reference/user.md
+      - Newsletter: api-reference/newsletter.md
+      - Post: api-reference/post.md
+      - Category: api-reference/category.md
+      - SubstackAuth: api-reference/auth.md
 
 # Extra CSS
 extra_css:

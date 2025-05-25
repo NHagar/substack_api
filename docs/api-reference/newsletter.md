@@ -5,12 +5,13 @@ The `Newsletter` class provides access to Substack publications.
 ## Class Definition
 
 ```python
-Newsletter(url: str)
+Newsletter(url: str, auth: Optional[SubstackAuth] = None)
 ```
 
 ### Parameters
 
 - `url` (str): The URL of the Substack newsletter
+- `auth` (Optional[SubstackAuth]): Authentication handler for accessing paywalled content
 
 ## Methods
 
@@ -85,7 +86,7 @@ Get authors of the newsletter.
 ## Example Usage
 
 ```python
-from substack_api import Newsletter
+from substack_api import Newsletter, SubstackAuth
 
 # Create a newsletter object
 newsletter = Newsletter("https://example.substack.com")
@@ -117,4 +118,13 @@ for author in authors:
 recommendations = newsletter.get_recommendations()
 for rec in recommendations:
     print(f"Recommended: {rec.url}")
+
+# Use with authentication for paywalled content
+auth = SubstackAuth(cookies_path="cookies.json")
+authenticated_newsletter = Newsletter("https://example.substack.com", auth=auth)
+paywalled_posts = authenticated_newsletter.get_posts(limit=5)
+for post in paywalled_posts:
+    if post.is_paywalled():
+        content = post.get_content()  # Now accessible with auth
+        print(f"Paywalled content: {content[:100]}...")
 ```

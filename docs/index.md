@@ -10,11 +10,12 @@ The Substack API library provides a simple interface to interact with Substack n
 - Retrieve user profiles and subscriptions
 - Access post content and metadata
 - Discover newsletters by category
+- Access paywalled content **that you have access to** with user-provided authentication
 
 ## Quick Start
 
 ```python
-from substack_api import Newsletter, User, Post, Category
+from substack_api import Newsletter, User, Post, Category, SubstackAuth
 
 # Get information about a newsletter
 newsletter = Newsletter("https://example.substack.com")
@@ -31,6 +32,11 @@ content = post.get_content()
 # Browse newsletters by category
 tech_category = Category(name="Technology")
 tech_newsletters = tech_category.get_newsletters()
+
+# Access paywalled content with authentication
+auth = SubstackAuth(cookies_path="cookies.json")
+authenticated_post = Post("https://example.substack.com/p/paywalled-post", auth=auth)
+paywalled_content = authenticated_post.get_content()
 ```
 
 ## Features
@@ -39,6 +45,7 @@ tech_newsletters = tech_category.get_newsletters()
 - Comprehensive access to Substack data
 - Pagination support for large collections
 - Automatic caching to minimize API calls
+- Authentication support for accessing paywalled content
 
 ## Important Note
 

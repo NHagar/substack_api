@@ -2,12 +2,13 @@
 
 ## Basic Concepts
 
-The Substack API library is organized around four main classes:
+The Substack API library is organized around five main classes:
 
 - `User` - Represents a Substack user profile
 - `Newsletter` - Represents a Substack publication
 - `Post` - Represents an individual post on Substack
 - `Category` - Represents a Substack category of newsletters
+- `SubstackAuth` - Handles authentication for accessing paywalled content
 
 Each class provides methods to access different aspects of the Substack ecosystem.
 
@@ -35,6 +36,29 @@ authors = newsletter.get_authors()
 
 # Get recommended newsletters
 recommendations = newsletter.get_recommendations()
+```
+
+### Accessing Paywalled Newsletter Content
+
+To access paywalled posts from a newsletter, provide authentication:
+
+```python
+from substack_api import Newsletter, SubstackAuth
+
+# Set up authentication
+auth = SubstackAuth(cookies_path="cookies.json")
+
+# Create authenticated newsletter
+newsletter = Newsletter("https://example.substack.com", auth=auth)
+
+# All retrieved posts will use authentication
+posts = newsletter.get_posts(limit=10)
+
+# Access content from paywalled posts
+for post in posts:
+    if post.is_paywalled():
+        content = post.get_content()  # Now accessible with auth
+        print(f"Paywalled content: {content[:100]}...")
 ```
 
 ## Working with Users
@@ -73,6 +97,27 @@ content = post.get_content()
 
 # Get post metadata
 metadata = post.get_metadata()
+
+# Check if post is paywalled
+if post.is_paywalled():
+    print("This post requires a subscription")
+```
+
+### Accessing Paywalled Content
+
+To access paywalled content, you need to provide authentication:
+
+```python
+from substack_api import Post, SubstackAuth
+
+# Set up authentication
+auth = SubstackAuth(cookies_path="cookies.json")
+
+# Create authenticated post
+post = Post("https://example.substack.com/p/paywalled-post", auth=auth)
+
+# Now you can access paywalled content
+content = post.get_content()
 ```
 
 ## Working with Categories
@@ -96,6 +141,21 @@ newsletters = category.get_newsletters()
 
 # Get full metadata for newsletters in this category
 newsletter_metadata = category.get_newsletter_metadata()
+```
+
+## Authentication
+
+The library supports authentication to access paywalled content. See the [Authentication Guide](authentication.md) for detailed information on setting up and using authentication.
+
+```python
+from substack_api import SubstackAuth
+
+# Set up authentication
+auth = SubstackAuth(cookies_path="cookies.json")
+
+# Use with any class that supports authentication
+newsletter = Newsletter("https://example.substack.com", auth=auth)
+post = Post("https://example.substack.com/p/paywalled-post", auth=auth)
 ```
 
 ## Caching Behavior
