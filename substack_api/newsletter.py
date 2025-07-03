@@ -92,9 +92,7 @@ class Newsletter:
 
             # Make the request
             response = self._make_request(endpoint, timeout=30)
-
-            if response.status_code != 200:
-                break
+            response.raise_for_status()
 
             items = response.json()
             if not items:
@@ -204,9 +202,7 @@ class Newsletter:
         # Now get the recommendations
         endpoint = f"{self.url}/api/v1/recommendations/from/{publication_id}"
         response = self._make_request(endpoint, timeout=30)
-
-        if response.status_code != 200:
-            return []
+        response.raise_for_status()
 
         recommendations = response.json()
         if not recommendations:
