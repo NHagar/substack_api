@@ -1,61 +1,15 @@
+from dataclasses import field, dataclass
+from functools import cached_property
+
+import requests
 from logprise import logger
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
-import requests
-
+from .auth import SubstackAuth
 from .constants import DEFAULT_HEADERS
 
-
-def resolve_handle_redirect(old_handle: str, timeout: int = 30) -> Optional[str]:
-    """
-    Resolve a potentially renamed Substack handle by following redirects.
-
-    Parameters
-    ----------
-    old_handle : str
-        The original handle that may have been renamed
-    timeout : int
-        Request timeout in seconds
-
-    Returns
-    -------
-    Optional[str]
-        The new handle if renamed, None if no redirect or on error
-    """
-    try:
-        # Make request to the public profile page with redirects enabled
-        response = requests.get(
-            f"https://substack.com/@{old_handle}",
-            headers=DEFAULT_HEADERS,
-            timeout=timeout,
-            allow_redirects=True,
-        )
-
-        # If we got a successful response, check if we were redirected
-        if response.status_code == 200:
-            # Parse the final URL to extract the handle
-            parsed_url = urlparse(response.url)
-            path_parts = parsed_url.path.strip("/").split("/")
-
-            # Check if this is a profile URL (starts with @)
-            if path_parts and path_parts[0].startswith("@"):
-                new_handle = path_parts[0][1:]  # Remove the @ prefix
-
-                # Only return if it's actually different
-                if new_handle and new_handle != old_handle:
-                    logger.info(
-                        f"Handle redirect detected: {old_handle} -> {new_handle}"
-                    )
-                    return new_handle
-
-        return None
-
-    except requests.RequestException as e:
-        logger.debug(f"Error resolving handle redirect for {old_handle}: {e}")
-        return None
-
-
+@dataclass
 class User:
     """
     User class for interacting with Substack user profiles.
@@ -63,29 +17,18 @@ class User:
     Now handles renamed accounts by following redirects when a handle has changed.
     """
 
-    def __init__(self, username: str, follow_redirects: bool = True):
-        """
-        Initialize a User object.
+    username: str
+    follow_redirects: bool = True
+    auth: SubstackAuth = field(default_factory=SubstackAuth, repr=False)
 
-        Parameters
-        ----------
-        username : str
-            The Substack username
-        follow_redirects : bool
-            Whether to follow redirects when a handle has been renamed (default: True)
-        """
-        self.username = username
-        self.original_username = username  # Keep track of the original
-        self.follow_redirects = follow_redirects
-        self.endpoint = f"https://substack.com/api/v1/user/{username}/public_profile"
+    def __post_init__(self):
+        self.original_username = self.username  # Keep track of the original
+        self.endpoint = f"https://substack.com/api/v1/user/{self.username}/public_profile"
         self._user_data = None  # Cache for user data
         self._redirect_attempted = False  # Prevent infinite redirect loops
 
     def __str__(self) -> str:
         return f"User: {self.username}"
-
-    def __repr__(self) -> str:
-        return f"User(username={self.username})"
 
     def _update_handle(self, new_handle: str) -> None:
         """
@@ -125,7 +68,7 @@ class User:
             return self._user_data
 
         try:
-            r = requests.get(self.endpoint, headers=DEFAULT_HEADERS, timeout=30)
+            r = self.auth.get(self.endpoint, timeout=30)
             r.raise_for_status()
             self._user_data = r.json()
             return self._user_data
@@ -141,7 +84,7 @@ class User:
                 self._redirect_attempted = True
 
                 # Try to resolve the redirect
-                new_handle = resolve_handle_redirect(self.username)
+                new_handle = self._resolve_handle_redirect()
 
                 if new_handle:
                     # Update our state with the new handle
@@ -149,8 +92,8 @@ class User:
 
                     # Try the request again with the new handle
                     try:
-                        r = requests.get(
-                            self.endpoint, headers=DEFAULT_HEADERS, timeout=30
+                        r = self.auth.get(
+                            self.endpoint, timeout=30
                         )
                         r.raise_for_status()
                         self._user_data = r.json()
@@ -262,3 +205,51 @@ class User:
             )
 
         return subscriptions
+
+    def _resolve_handle_redirect(self, timeout: int = 30) -> Optional[str]:
+        """
+        Resolve a potentially renamed Substack handle by following redirects.
+
+        Parameters
+        ----------
+        old_handle : str
+            The original handle that may have been renamed
+        timeout : int
+            Request timeout in seconds
+
+        Returns
+        -------
+        Optional[str]
+            The new handle if renamed, None if no redirect or on error
+        """
+        try:
+            oldhandle = self.username
+            # Make request to the public profile page with redirects enabled
+            response = self.auth.get(
+                f"https://substack.com/@{oldhandle}",
+                timeout=timeout,
+                allow_redirects=True,
+            )
+
+            # If we got a successful response, check if we were redirected
+            if response.status_code == 200:
+                # Parse the final URL to extract the handle
+                parsed_url = urlparse(response.url)
+                path_parts = parsed_url.path.strip("/").split("/")
+
+                # Check if this is a profile URL (starts with @)
+                if path_parts and path_parts[0].startswith("@"):
+                    new_handle = path_parts[0][1:]  # Remove the @ prefix
+
+                    # Only return if it's actually different
+                    if new_handle and new_handle != old_handle:
+                        logger.info(
+                            f"Handle redirect detected: {old_handle} -> {new_handle}"
+                        )
+                        return new_handle
+
+            return None
+
+        except requests.RequestException as e:
+            logger.debug(f"Error resolving handle redirect for {old_handle}: {e}")
+            return None
