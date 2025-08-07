@@ -4,11 +4,8 @@ from urllib.parse import urlparse
 
 import requests
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
-}
+from .constants import DEFAULT_HEADERS
 
-# Setup logger
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +29,7 @@ def resolve_handle_redirect(old_handle: str, timeout: int = 30) -> Optional[str]
         # Make request to the public profile page with redirects enabled
         response = requests.get(
             f"https://substack.com/@{old_handle}",
-            headers=HEADERS,
+            headers=DEFAULT_HEADERS,
             timeout=timeout,
             allow_redirects=True,
         )
@@ -130,7 +127,7 @@ class User:
             return self._user_data
 
         try:
-            r = requests.get(self.endpoint, headers=HEADERS, timeout=30)
+            r = requests.get(self.endpoint, headers=DEFAULT_HEADERS, timeout=30)
             r.raise_for_status()
             self._user_data = r.json()
             return self._user_data
@@ -154,7 +151,9 @@ class User:
 
                     # Try the request again with the new handle
                     try:
-                        r = requests.get(self.endpoint, headers=HEADERS, timeout=30)
+                        r = requests.get(
+                            self.endpoint, headers=DEFAULT_HEADERS, timeout=30
+                        )
                         r.raise_for_status()
                         self._user_data = r.json()
                         return self._user_data

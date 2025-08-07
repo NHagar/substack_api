@@ -40,7 +40,7 @@ def test_post_string_representation(sample_post_url):
     post = Post(sample_post_url)
 
     assert str(post) == f"Post: {sample_post_url}"
-    assert repr(post) == f"Post(url={sample_post_url})"
+    assert repr(post) == f"Post(url='{sample_post_url}')"
 
 
 def test_init_handles_different_url_formats():
@@ -61,7 +61,7 @@ def test_init_handles_different_url_formats():
     assert post4.slug == ""
 
 
-@patch("substack_api.post.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_post_data(mock_get, sample_post_url, mock_post_data):
     # Configure the mock
     mock_response = MagicMock()
@@ -74,9 +74,6 @@ def test_fetch_post_data(mock_get, sample_post_url, mock_post_data):
     # Verify the request was made correctly
     mock_get.assert_called_once_with(
         post.endpoint,
-        headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
-        },
         timeout=30,
     )
 
@@ -85,7 +82,7 @@ def test_fetch_post_data(mock_get, sample_post_url, mock_post_data):
     assert post._post_data == mock_post_data
 
 
-@patch("substack_api.post.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_post_data_uses_cache(mock_get, sample_post_url, mock_post_data):
     # Configure the mock
     mock_response = MagicMock()
@@ -107,7 +104,7 @@ def test_fetch_post_data_uses_cache(mock_get, sample_post_url, mock_post_data):
     assert mock_get.call_count == 2
 
 
-@patch("substack_api.post.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_post_data_raises_exception(mock_get, sample_post_url):
     # Configure the mock to raise an exception
     mock_get.side_effect = requests.RequestException("API Error")

@@ -1,23 +1,21 @@
 import json
-import os
-import tempfile
+from pathlib import Path
+from typing import Generator
 from unittest.mock import Mock, patch
 
 import pytest
 import requests
 
-from substack_api.auth import SubstackAuth
+from substack_api import Newsletter, Post, SubstackAuth
 
 
 @pytest.fixture
-def temp_cookies_file():
+def temp_cookies_file(tmp_path: Path) -> Generator[Path, None, None]:
     """Create a temporary file for cookies storage."""
-    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".json") as f:
-        temp_path = f.name
+    temp_path = tmp_path / "cookies.json"
+    temp_path.write_bytes(b"[]")
     yield temp_path
-    # Cleanup
-    if os.path.exists(temp_path):
-        os.remove(temp_path)
+    temp_path.unlink(missing_ok=True)
 
 
 @pytest.fixture
@@ -71,7 +69,7 @@ class TestSubstackAuth:
 
         assert auth.cookies_path == temp_cookies_file
         assert auth.authenticated
-        assert isinstance(auth.session, requests.Session)
+        assert isinstance(auth, requests.Session)
 
     def test_init_with_existing_cookies(self, temp_cookies_file, mock_cookies):
         """Test initialization with existing cookies file."""
@@ -85,7 +83,7 @@ class TestSubstackAuth:
 
     def test_load_cookies_file_not_found(self, temp_cookies_file):
         """Test loading cookies when file doesn't exist."""
-        auth = SubstackAuth(cookies_path=temp_cookies_file + ".nonexistent")
+        auth = SubstackAuth(cookies_path=temp_cookies_file / ".nonexistent")
         result = auth.load_cookies()
 
         assert result is False
@@ -101,7 +99,7 @@ class TestSubstackAuth:
 
         mock_response = Mock()
 
-        with patch.object(auth.session, "get", return_value=mock_response) as mock_get:
+        with patch.object(auth, "get", return_value=mock_response) as mock_get:
             result = auth.get("https://example.com/api", timeout=30)
 
             assert result == mock_response
@@ -118,9 +116,7 @@ class TestSubstackAuth:
         mock_response = Mock()
         data = {"key": "value"}
 
-        with patch.object(
-            auth.session, "post", return_value=mock_response
-        ) as mock_post:
+        with patch.object(auth, "post", return_value=mock_response) as mock_post:
             result = auth.post("https://example.com/api", json=data)
 
             assert result == mock_response
@@ -133,20 +129,18 @@ class TestSubstackAuth:
             json.dump(mock_cookies, f)
         auth = SubstackAuth(cookies_path=temp_cookies_file)
 
-        assert "User-Agent" in auth.session.headers
-        assert auth.session.headers["Accept"] == "application/json"
-        assert auth.session.headers["Content-Type"] == "application/json"
+        assert "User-Agent" in auth.headers
+        assert auth.headers["Accept"] == "application/json"
+        assert auth.headers["Content-Type"] == "application/json"
 
 
 # Integration tests with Post and Newsletter classes
 class TestAuthIntegration:
     """Test authentication integration with Post and Newsletter classes."""
 
-    @patch("substack_api.post.requests.get")
+    @patch("substack_api.auth.SubstackAuth.get")
     def test_post_without_auth(self, mock_get):
         """Test Post class without authentication uses regular requests."""
-        from substack_api.post import Post
-
         mock_response = Mock()
         mock_response.json.return_value = {
             "id": 123,
@@ -169,8 +163,6 @@ class TestAuthIntegration:
             json.dump(mock_cookies, f)
         auth = SubstackAuth(cookies_path=temp_cookies_file)
 
-        from substack_api.post import Post
-
         auth.authenticated = True
 
         mock_response = Mock()
@@ -190,7 +182,6 @@ class TestAuthIntegration:
 
     def test_post_is_paywalled(self):
         """Test is_paywalled method."""
-        from substack_api.post import Post
 
         post = Post("https://test.substack.com/p/test-post")
 
@@ -206,32 +197,21 @@ class TestAuthIntegration:
         ):
             assert post.is_paywalled() is False
 
+    @patch("substack_api.auth.SubstackAuth.get")
     def test_newsletter_with_auth_passes_to_posts(
-        self, temp_cookies_file, mock_cookies
+        self, mock_get, temp_cookies_file, mock_cookies
     ):
         """Test Newsletter passes auth to Post objects."""
-        from substack_api.newsletter import Newsletter
-        from substack_api.post import Post
+        newsletter = Newsletter("https://test.substack.com")
 
-        # Write cookies to file
-        with open(temp_cookies_file, "w") as f:
-            json.dump(mock_cookies, f)
-        auth = SubstackAuth(cookies_path=temp_cookies_file)
-        auth.authenticated = True
-
-        newsletter = Newsletter("https://test.substack.com", auth=auth)
-
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = [
+        mock_get.return_value.json.return_value = [
             {"canonical_url": "https://test.substack.com/p/post1"},
             {"canonical_url": "https://test.substack.com/p/post2"},
         ]
 
-        with patch.object(newsletter, "_make_request", return_value=mock_response):
-            posts = newsletter.get_posts(limit=2)
+        posts = newsletter.get_posts(limit=2)
 
-            # Verify auth was passed to Post objects
-            assert len(posts) == 2
-            assert all(isinstance(p, Post) for p in posts)
-            assert all(p.auth == auth for p in posts)
+        # Verify auth was passed to Post objects
+        assert len(posts) == 2
+        assert all(isinstance(p, Post) for p in posts)
+        assert all(p.auth == newsletter.auth for p in posts)

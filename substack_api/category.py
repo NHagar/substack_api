@@ -2,12 +2,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 
-# Add Newsletter import
+from .constants import DEFAULT_HEADERS
 from .newsletter import Newsletter
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
-}
 
 
 def list_all_categories() -> List[Tuple[str, int]]:
@@ -20,7 +16,7 @@ def list_all_categories() -> List[Tuple[str, int]]:
         List of tuples containing (category_name, category_id)
     """
     endpoint_cat = "https://substack.com/api/v1/categories"
-    r = requests.get(endpoint_cat, headers=HEADERS, timeout=30)
+    r = requests.get(endpoint_cat, headers=DEFAULT_HEADERS, timeout=30)
     r.raise_for_status()
     categories = [(i["name"], i["id"]) for i in r.json()]
     return categories
@@ -125,7 +121,7 @@ class Category:
         # endpoint doesn't return more than 21 pages
         while more and page_num <= 20:
             full_url = endpoint + str(page_num)
-            r = requests.get(full_url, headers=HEADERS, timeout=30)
+            r = requests.get(full_url, headers=DEFAULT_HEADERS, timeout=30)
             r.raise_for_status()
 
             resp = r.json()

@@ -3,7 +3,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from substack_api import Newsletter, User
-from substack_api.newsletter import HEADERS
 
 
 @pytest.fixture
@@ -62,25 +61,21 @@ def test_newsletter_init(newsletter_url):
 def test_newsletter_string_representation(newsletter_url):
     newsletter = Newsletter(newsletter_url)
     assert str(newsletter) == f"Newsletter: {newsletter_url}"
-    assert repr(newsletter) == f"Newsletter(url={newsletter_url})"
+    assert repr(newsletter) == f"Newsletter(url='{newsletter_url}')"
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_paginated_posts_single_page(mock_get, newsletter_url, mock_post_items):
     # Set up mock
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = mock_post_items
-    mock_get.return_value = mock_response
+    mock_get.return_value.json.return_value = mock_post_items
 
     newsletter = Newsletter(newsletter_url)
     params = {"sort": "new"}
-    results = newsletter._fetch_paginated_posts(params, limit=None)
+    results = list(newsletter._fetch_paginated_posts(params, limit=None))
 
     # Check we made the right API call
     mock_get.assert_called_once_with(
         f"{newsletter_url}/api/v1/archive?sort=new&offset=0&limit=15",
-        headers=HEADERS,
         timeout=30,
     )
 
@@ -90,17 +85,15 @@ def test_fetch_paginated_posts_single_page(mock_get, newsletter_url, mock_post_i
     assert results[0]["canonical_url"] == mock_post_items[0]["canonical_url"]
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_paginated_posts_multiple_pages(
     mock_get, newsletter_url, mock_post_items
 ):
     # Set up mock to return 3 items for first page, 1 item for second page
     mock_response_1 = MagicMock()
-    mock_response_1.status_code = 200
     mock_response_1.json.return_value = mock_post_items
 
     mock_response_2 = MagicMock()
-    mock_response_2.status_code = 200
     mock_response_2.json.return_value = [
         {
             "id": 104,
@@ -110,14 +103,13 @@ def test_fetch_paginated_posts_multiple_pages(
     ]
 
     mock_response_3 = MagicMock()
-    mock_response_3.status_code = 200
     mock_response_3.json.return_value = []
 
     mock_get.side_effect = [mock_response_1, mock_response_2, mock_response_3]
 
     newsletter = Newsletter(newsletter_url)
     params = {"sort": "new"}
-    results = newsletter._fetch_paginated_posts(params, page_size=3)
+    results = list(newsletter._fetch_paginated_posts(params, page_size=3))
 
     # Check we made the expected number of API calls
     assert mock_get.call_count == 2
@@ -126,17 +118,14 @@ def test_fetch_paginated_posts_multiple_pages(
     assert len(results) == 4
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_paginated_posts_with_limit(mock_get, newsletter_url, mock_post_items):
     # Set up mock
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = mock_post_items
-    mock_get.return_value = mock_response
+    mock_get.return_value.json.return_value = mock_post_items
 
     newsletter = Newsletter(newsletter_url)
     params = {"sort": "new"}
-    results = newsletter._fetch_paginated_posts(params, limit=2)
+    results = list(newsletter._fetch_paginated_posts(params, limit=2))
 
     # Check we only got the requested limit
     assert len(results) == 2
@@ -144,7 +133,7 @@ def test_fetch_paginated_posts_with_limit(mock_get, newsletter_url, mock_post_it
     assert results[0]["canonical_url"] == mock_post_items[0]["canonical_url"]
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_paginated_posts_error_response(mock_get, newsletter_url):
     # Set up mock to return an error
     mock_response = MagicMock()
@@ -153,7 +142,7 @@ def test_fetch_paginated_posts_error_response(mock_get, newsletter_url):
 
     newsletter = Newsletter(newsletter_url)
     params = {"sort": "new"}
-    results = newsletter._fetch_paginated_posts(params)
+    results = list(newsletter._fetch_paginated_posts(params))
 
     # Should return empty list on error
     assert results == []
@@ -201,7 +190,7 @@ def test_get_podcasts(mock_fetch, newsletter_url):
     mock_fetch.assert_called_once_with({"sort": "new", "type": "podcast"}, 3)
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_get_recommendations_success(mock_get, newsletter_url, mock_recommendations):
     # Mock the post fetch to return a publication ID
     post_mock = MagicMock()
@@ -221,7 +210,6 @@ def test_get_recommendations_success(mock_get, newsletter_url, mock_recommendati
         # Verify the API was called correctly
         mock_get.assert_called_once_with(
             f"{newsletter_url}/api/v1/recommendations/from/123",
-            headers=HEADERS,
             timeout=30,
         )
 
@@ -245,7 +233,7 @@ def test_get_recommendations_no_posts(mock_get_posts, newsletter_url):
     assert recommendations == []
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_get_recommendations_error(mock_get, newsletter_url):
     # Mock the post fetch
     post_mock = MagicMock()
@@ -264,7 +252,7 @@ def test_get_recommendations_error(mock_get, newsletter_url):
         assert recommendations == []
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_get_authors(mock_get, newsletter_url, mock_authors):
     # Set up mock
     mock_response = MagicMock()
@@ -277,7 +265,7 @@ def test_get_authors(mock_get, newsletter_url, mock_authors):
 
     # Check API call
     expected_url = f"{newsletter_url}/api/v1/publication/users/ranked?public=true"
-    mock_get.assert_called_once_with(expected_url, headers=HEADERS, timeout=30)
+    mock_get.assert_called_once_with(expected_url, timeout=30)
 
     # Check results
     assert len(authors) == 2
@@ -286,7 +274,7 @@ def test_get_authors(mock_get, newsletter_url, mock_authors):
     assert authors[1].username == "author2"
 
 
-@patch("substack_api.newsletter.requests.get")
+@patch("substack_api.auth.SubstackAuth.get")
 def test_get_authors_empty_response(mock_get, newsletter_url):
     # Set up mock with empty response
     mock_response = MagicMock()

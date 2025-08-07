@@ -1,15 +1,18 @@
 import json
-import os
+from pathlib import Path
 
 import requests
+from logprise import logger
+
+from .constants import DEFAULT_HEADERS
 
 
-class SubstackAuth:
+class SubstackAuth(requests.Session):
     """Handles authentication for Substack API requests."""
 
     def __init__(
         self,
-        cookies_path: str,
+        cookies_path: str | Path | None = None,
     ):
         """
         Initialize authentication handler.
@@ -19,27 +22,18 @@ class SubstackAuth:
         cookies_path : str, optional
             Path to retrieve session cookies from
         """
-        self.cookies_path = cookies_path
-        self.session = requests.Session()
-        self.authenticated = False
+        super().__init__()
+
+        self.cookies_path = Path(cookies_path) if cookies_path else None
+        self.verify = False
 
         # Set default headers
-        self.session.headers.update(
-            {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36",
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            }
-        )
+        self.headers.update(DEFAULT_HEADERS)
+        self.headers["Accept"] = "application/json"
+        self.headers["Content-Type"] = "application/json"
 
         # Try to load existing cookies
-        if os.path.exists(self.cookies_path):
-            self.load_cookies()
-            self.authenticated = True
-        else:
-            print(f"Cookies file not found at {self.cookies_path}. Please log in.")
-            self.authenticated = False
-            self.session.cookies.clear()
+        self.authenticated = self.load_cookies()
 
     def load_cookies(self) -> bool:
         """
@@ -51,11 +45,14 @@ class SubstackAuth:
             True if cookies loaded successfully
         """
         try:
-            with open(self.cookies_path, "r") as f:
+            if not self.cookies_path or not self.cookies_path.exists():
+                return False
+
+            with self.cookies_path.open("r", encoding="utf8") as f:
                 cookies = json.load(f)
 
             for cookie in cookies:
-                self.session.cookies.set(
+                self.cookies.set(
                     cookie["name"],
                     cookie["value"],
                     domain=cookie.get("domain"),
@@ -66,41 +63,6 @@ class SubstackAuth:
             return True
 
         except Exception as e:
-            print(f"Failed to load cookies: {str(e)}")
+            self.cookies.clear()
+            logger.error(f"Failed to load cookies: {e}")
             return False
-
-    def get(self, url: str, **kwargs) -> requests.Response:
-        """
-        Make authenticated GET request.
-
-        Parameters
-        ----------
-        url : str
-            URL to request
-        **kwargs
-            Additional arguments to pass to requests.get
-
-        Returns
-        -------
-        requests.Response
-            Response object
-        """
-        return self.session.get(url, **kwargs)
-
-    def post(self, url: str, **kwargs) -> requests.Response:
-        """
-        Make authenticated POST request.
-
-        Parameters
-        ----------
-        url : str
-            URL to request
-        **kwargs
-            Additional arguments to pass to requests.post
-
-        Returns
-        -------
-        requests.Response
-            Response object
-        """
-        return self.session.post(url, **kwargs)

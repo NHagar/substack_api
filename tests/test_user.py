@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import Mock, patch
 
-from substack_api.user import HEADERS, User
+from substack_api.constants import DEFAULT_HEADERS
+from substack_api.user import User
 
 
 class TestUser(unittest.TestCase):
@@ -33,7 +34,7 @@ class TestUser(unittest.TestCase):
         self.assertEqual(data, {"id": 123, "name": "Test User"})
         mock_get.assert_called_once_with(
             "https://substack.com/api/v1/user/testuser/public_profile",
-            headers=HEADERS,
+            headers=DEFAULT_HEADERS,
             timeout=30,
         )
 
