@@ -1,12 +1,10 @@
-import logging
+from logprise import logger
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
 import requests
 
 from .constants import DEFAULT_HEADERS
-
-logger = logging.getLogger(__name__)
 
 
 def resolve_handle_redirect(old_handle: str, timeout: int = 30) -> Optional[str]:
