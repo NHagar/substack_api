@@ -1,4 +1,9 @@
+import unittest
+from typing import Any, Generator
+from unittest.mock import Mock, patch, MagicMock, AsyncMock
+
 import pytest
+import requests
 
 
 @pytest.fixture
@@ -53,3 +58,13 @@ def mock_post_content():
         "audience": "everyone",
         "comments_count": 5,
     }
+
+
+@pytest.fixture
+def mock_get() -> Generator[MagicMock | AsyncMock, None, None]:
+    with patch("substack_api.auth.SubstackAuth.get") as p:
+        p.return_value.json.return_value = []
+        p.return_value.status_code = 200
+        p.return_value.reason = "OK"
+        p.return_value.raise_for_status.side_effect = lambda: requests.Response.raise_for_status(p.return_value)
+        yield p

@@ -223,10 +223,10 @@ class User:
             The new handle if renamed, None if no redirect or on error
         """
         try:
-            oldhandle = self.username
+            old_handle = self.username
             # Make request to the public profile page with redirects enabled
             response = self.auth.get(
-                f"https://substack.com/@{oldhandle}",
+                f"https://substack.com/@{old_handle}",
                 timeout=timeout,
                 allow_redirects=True,
             )
