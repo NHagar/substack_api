@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 
 from logprise import logger
 
-from substack_api.auth import SubstackAuth
+from .auth import SubstackAuth
 
 
 @dataclass

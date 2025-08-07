@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from time import sleep
 from typing import Any, Dict, List, Optional, Generator
 
-from substack_api.auth import SubstackAuth
+from .auth import SubstackAuth
 
 
 @dataclass
