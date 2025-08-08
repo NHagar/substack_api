@@ -83,7 +83,9 @@ def test_fetch_paginated_posts_single_page(mock_get, newsletter_url, mock_post_i
     assert results[0]["canonical_url"] == mock_post_items[0]["canonical_url"]
 
 
-def test_fetch_paginated_posts_negative_limit(mock_get, newsletter_url, mock_post_items):
+def test_fetch_paginated_posts_negative_limit(
+    mock_get, newsletter_url, mock_post_items
+):
     newsletter = Newsletter(newsletter_url)
     params = {"sort": "new"}
     results = list(newsletter._fetch_paginated_posts(params, limit=-1))
