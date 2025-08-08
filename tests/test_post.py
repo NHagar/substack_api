@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from substack_api.post import Post
+from substack_api import Post
 
 
 @pytest.fixture
@@ -61,7 +61,6 @@ def test_init_handles_different_url_formats():
     assert post4.slug == ""
 
 
-@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_post_data(mock_get, sample_post_url, mock_post_data):
     # Configure the mock
     mock_response = MagicMock()
@@ -82,7 +81,6 @@ def test_fetch_post_data(mock_get, sample_post_url, mock_post_data):
     assert post._post_data == mock_post_data
 
 
-@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_post_data_uses_cache(mock_get, sample_post_url, mock_post_data):
     # Configure the mock
     mock_response = MagicMock()
@@ -104,7 +102,6 @@ def test_fetch_post_data_uses_cache(mock_get, sample_post_url, mock_post_data):
     assert mock_get.call_count == 2
 
 
-@patch("substack_api.auth.SubstackAuth.get")
 def test_fetch_post_data_raises_exception(mock_get, sample_post_url):
     # Configure the mock to raise an exception
     mock_get.side_effect = requests.RequestException("API Error")
@@ -153,3 +150,10 @@ def test_get_content_handles_missing_content(mock_fetch_data, sample_post_url):
     content = post.get_content()
 
     assert content is None
+
+
+@patch("substack_api.post.Post._fetch_post_data")
+def test_post_paid_but_not_authed(mock_fetch_data, sample_post_url, capture_logs):
+    mock_fetch_data.return_value = {"audience": "only_paid"}
+    Post(sample_post_url).get_content()
+    assert "This post is paywalled." in capture_logs.getvalue()

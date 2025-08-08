@@ -2,8 +2,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from substack_api.category import Category, list_all_categories
-from substack_api.newsletter import Newsletter
+from substack_api import Category, Newsletter
+from substack_api.category import list_all_categories
 
 
 @pytest.fixture
@@ -259,3 +259,8 @@ def test_refresh_data(mock_fetch_data):
     category.refresh_data()
 
     mock_fetch_data.assert_called_with(force_refresh=True)
+
+
+def test_nothing_provided():
+    with pytest.raises(ValueError, match="Either name or id must be provided"):
+        Category()

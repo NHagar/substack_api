@@ -1,5 +1,4 @@
 from dataclasses import field, dataclass
-from functools import cached_property
 
 import requests
 from logprise import logger
@@ -7,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
 from .auth import SubstackAuth
-from .constants import DEFAULT_HEADERS
+
 
 @dataclass
 class User:
@@ -18,12 +17,14 @@ class User:
     """
 
     username: str
-    follow_redirects: bool = True
+    follow_redirects: bool = field(default=True, repr=False)
     auth: SubstackAuth = field(default_factory=SubstackAuth, repr=False)
 
     def __post_init__(self):
         self.original_username = self.username  # Keep track of the original
-        self.endpoint = f"https://substack.com/api/v1/user/{self.username}/public_profile"
+        self.endpoint = (
+            f"https://substack.com/api/v1/user/{self.username}/public_profile"
+        )
         self._user_data = None  # Cache for user data
         self._redirect_attempted = False  # Prevent infinite redirect loops
 
@@ -92,9 +93,7 @@ class User:
 
                     # Try the request again with the new handle
                     try:
-                        r = self.auth.get(
-                            self.endpoint, timeout=30
-                        )
+                        r = self.auth.get(self.endpoint, timeout=30)
                         r.raise_for_status()
                         self._user_data = r.json()
                         return self._user_data
@@ -222,8 +221,9 @@ class User:
         Optional[str]
             The new handle if renamed, None if no redirect or on error
         """
+        old_handle = self.username
+
         try:
-            old_handle = self.username
             # Make request to the public profile page with redirects enabled
             response = self.auth.get(
                 f"https://substack.com/@{old_handle}",

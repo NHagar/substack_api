@@ -16,9 +16,22 @@ dev = [
     "mkdocstrings-python>=1.16.2",
     "pytest>=8.3.4",
     "ruff>=0.9.9",
+    "pytest-cov>=6.2.1",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/nhagar/substack_api"
 "Bug Tracker" = "https://github.com/nhagar/substack_api/issues"
 "Documentation" = "https://nhagar.github.io/substack_api/"
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+#    "--no-cov",
+    "--cov=substack_api",
+    "--cov-branch",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=80",
+]

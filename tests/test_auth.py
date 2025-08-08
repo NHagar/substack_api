@@ -138,7 +138,6 @@ class TestSubstackAuth:
 class TestAuthIntegration:
     """Test authentication integration with Post and Newsletter classes."""
 
-    @patch("substack_api.auth.SubstackAuth.get")
     def test_post_without_auth(self, mock_get):
         """Test Post class without authentication uses regular requests."""
         mock_response = Mock()
@@ -197,7 +196,6 @@ class TestAuthIntegration:
         ):
             assert post.is_paywalled() is False
 
-    @patch("substack_api.auth.SubstackAuth.get")
     def test_newsletter_with_auth_passes_to_posts(
         self, mock_get, temp_cookies_file, mock_cookies
     ):

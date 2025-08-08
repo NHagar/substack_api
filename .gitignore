@@ -6,3 +6,5 @@ dist/
 .DS_Store
 *.json
 .idea/
+.coverage
+.venv/

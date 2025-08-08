@@ -87,7 +87,11 @@ class Post:
         content = data.get("body_html")
 
         # Check if content is paywalled and we don't have auth
-        if not content and data.get("audience") == "only_paid" and not self.auth:
+        if (
+            not content
+            and data.get("audience") == "only_paid"
+            and not self.auth.authenticated
+        ):
             logger.warning(
                 "This post is paywalled. Provide authentication to access full content."
             )

@@ -1,9 +1,9 @@
-import unittest
-from typing import Any, Generator
-from unittest.mock import Mock, patch, MagicMock, AsyncMock
+import io
+from unittest.mock import MagicMock
 
 import pytest
 import requests
+from logprise import logger
 
 
 @pytest.fixture
@@ -60,11 +60,33 @@ def mock_post_content():
     }
 
 
-@pytest.fixture
-def mock_get() -> Generator[MagicMock | AsyncMock, None, None]:
-    with patch("substack_api.auth.SubstackAuth.get") as p:
-        p.return_value.json.return_value = []
-        p.return_value.status_code = 200
-        p.return_value.reason = "OK"
-        p.return_value.raise_for_status.side_effect = lambda: requests.Response.raise_for_status(p.return_value)
-        yield p
+def _setup_response_object(monkeypatch, method) -> MagicMock:
+    p = MagicMock()
+    monkeypatch.setattr(f"substack_api.auth.SubstackAuth.{method}", p)
+    p.return_value.json.return_value = []
+    p.return_value.status_code = 200
+    p.return_value.reason = "OK"
+    p.return_value.raise_for_status.side_effect = (
+        lambda: requests.Response.raise_for_status(p.return_value)
+    )
+    return p
+
+
+@pytest.fixture(autouse=True)
+def mock_get(monkeypatch) -> MagicMock:
+    return _setup_response_object(monkeypatch, "get")
+
+
+@pytest.fixture(autouse=True)
+def mock_post(monkeypatch) -> MagicMock:
+    return _setup_response_object(monkeypatch, "post")
+
+
+@pytest.fixture(autouse=True)
+def capture_logs():
+    """Fixture to capture loguru/logprise output."""
+    logger.remove()
+    log_stream = io.StringIO()
+    handler_id = logger.add(log_stream, format="{message}")
+    yield log_stream
+    logger.remove(handler_id)
