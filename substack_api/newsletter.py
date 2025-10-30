@@ -56,7 +56,7 @@ class Newsletter:
         else:
             resp = requests.get(endpoint, headers=HEADERS, **kwargs)
 
-        sleep(1)  # Be polite to the server
+        sleep(2)  # Be polite to the server
         return resp
 
     def _fetch_paginated_posts(

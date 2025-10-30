@@ -128,7 +128,7 @@ class Category:
             full_url = endpoint + str(page_num)
             r = requests.get(full_url, headers=HEADERS, timeout=30)
             r.raise_for_status()
-            sleep(1)  # Be polite to the server
+            sleep(2)  # Be polite to the server
 
             resp = r.json()
             newsletters = resp["publications"]
