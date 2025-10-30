@@ -1,10 +1,14 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm[toml]>=8.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "substack-api"
-version = "1.1.2"
 description = "Unofficial wrapper for the Substack API"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = ["requests>=2.32.3"]
+dynamic = ["version"]
 
 [dependency-groups]
 dev = [
@@ -21,3 +25,7 @@ dev = [
 "Homepage" = "https://github.com/nhagar/substack_api"
 "Bug Tracker" = "https://github.com/nhagar/substack_api/issues"
 "Documentation" = "https://nhagar.github.io/substack_api/"
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
