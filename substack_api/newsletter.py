@@ -52,9 +52,12 @@ class Newsletter:
             The response object from the request
         """
         if self.auth and self.auth.authenticated:
-            return self.auth.get(endpoint, **kwargs)
+            resp = self.auth.get(endpoint, **kwargs)
         else:
-            return requests.get(endpoint, headers=HEADERS, **kwargs)
+            resp = requests.get(endpoint, headers=HEADERS, **kwargs)
+
+        sleep(2)  # Be polite to the server
+        return resp
 
     def _fetch_paginated_posts(
         self, params: Dict[str, str], limit: Optional[int] = None, page_size: int = 15
@@ -111,9 +114,6 @@ class Newsletter:
             # Check if we got fewer items than requested (last page)
             if len(items) < batch_size:
                 more_items = False
-
-            # Be nice to the API
-            sleep(0.5)
 
         # Instead of creating Post objects directly, return the URLs
         # The caller will create Post objects as needed
