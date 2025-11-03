@@ -18,6 +18,7 @@ dev = [
     "mkdocs-material>=9.6.6",
     "mkdocstrings-python>=1.16.2",
     "pytest>=8.3.4",
+    "pytest-cov>=7.0.0",
     "ruff>=0.9.9",
 ]
 

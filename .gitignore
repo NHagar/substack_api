@@ -5,3 +5,5 @@ dist/
 .vscode/
 .DS_Store
 *.json
+substack_api.egg-info/
+.coverage
