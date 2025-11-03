@@ -35,10 +35,17 @@ jobs:
           uv sync
           uv pip install build twine
       
+      - name: Extract release version
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          echo "value=${TAG#v}" >> "$GITHUB_OUTPUT"
+      
       - name: Build and publish
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_KEY }}
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.version.outputs.value }}
         run: |
           uv run python -m build
           uv run twine upload dist/*
