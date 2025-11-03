@@ -1,3 +1,5 @@
+import re
+import urllib.parse
 from time import sleep
 from typing import Any, Dict, List, Optional
 
@@ -8,6 +10,43 @@ from substack_api.auth import SubstackAuth
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
 }
+
+
+SEARCH_URL = "https://substack.com/api/v1/publication/search"
+
+DISCOVERY_HEADERS = {
+    "User-Agent": HEADERS["User-Agent"],
+    "Accept": "application/json",
+    "Origin": "https://substack.com",
+    "Referer": "https://substack.com/discover",
+}
+
+
+def _host_from_url(url: str) -> str:
+    host = urllib.parse.urlparse(
+        url if "://" in url else f"https://{url}"
+    ).netloc.lower()
+    return host
+
+
+def _match_publication(search_results: dict, host: str) -> Optional[dict]:
+    # Try exact custom domain, then subdomain match
+    for item in search_results.get("publications", []):
+        if (
+            item.get("custom_domain") and _host_from_url(item["custom_domain"]) == host
+        ) or (
+            item.get("subdomain")
+            and f"{item['subdomain'].lower()}.substack.com" == host
+        ):
+            return item
+    # Fallback: loose match on subdomain token
+    m = re.match(r"^([a-z0-9-]+)\.substack\.com$", host)
+    if m:
+        sub = m.group(1)
+        for item in search_results.get("publications", []):
+            if item.get("subdomain", "").lower() == sub:
+                return item
+    return None
 
 
 class Newsletter:
@@ -183,49 +222,57 @@ class Newsletter:
         post_data = self._fetch_paginated_posts(params, limit)
         return [Post(item["canonical_url"], auth=self.auth) for item in post_data]
 
+    def _resolve_publication_id(self) -> Optional[int]:
+        """Resolve publication_id via Substack discovery search—no posts needed."""
+        host = _host_from_url(self.url)
+        q = host.split(":")[0]  # strip port if present
+        params = {
+            "query": q,
+            "page": 0,
+            "limit": 25,
+            "skipExplanation": "true",
+            "sort": "relevance",
+        }
+        r = requests.get(
+            SEARCH_URL, headers=DISCOVERY_HEADERS, params=params, timeout=30
+        )
+        r.raise_for_status()
+        match = _match_publication(r.json(), host)
+        return match.get("id") if match else None
+
     def get_recommendations(self) -> List["Newsletter"]:
         """
-        Get recommended publications for this newsletter
-
-        Returns
-        -------
-        List[Newsletter]
-            List of recommended Newsletter objects
+        Get recommended publications without relying on the latest post.
         """
-        # First get any post to extract the publication ID
-        posts = self.get_posts(limit=1)
-        if not posts:
+        publication_id = self._resolve_publication_id()
+        if not publication_id:
+            # graceful fallback to your existing (post-derived) path
+            try:
+                posts = self.get_posts(limit=1)
+                publication_id = (
+                    posts[0].get_metadata()["publication_id"] if posts else None
+                )
+            except Exception:
+                publication_id = None
+        if not publication_id:
             return []
 
-        publication_id = posts[0].get_metadata()["publication_id"]
-
-        # Now get the recommendations
         endpoint = f"{self.url}/api/v1/recommendations/from/{publication_id}"
         response = self._make_request(endpoint, timeout=30)
         response.raise_for_status()
+        recommendations = response.json() or []
 
-        recommendations = response.json()
-        if not recommendations:
-            return []
-
-        recommended_newsletter_urls = []
+        urls = []
         for rec in recommendations:
-            recpub = rec["recommendedPublication"]
-            if "custom_domain" in recpub and recpub["custom_domain"]:
-                recommended_newsletter_urls.append(recpub["custom_domain"])
-            else:
-                recommended_newsletter_urls.append(
-                    f"{recpub['subdomain']}.substack.com"
-                )
+            pub = rec.get("recommendedPublication", {})
+            if pub.get("custom_domain"):
+                urls.append(pub["custom_domain"])
+            elif pub.get("subdomain"):
+                urls.append(f"{pub['subdomain']}.substack.com")
 
-        # Avoid circular import
-        from .newsletter import Newsletter
+        from .newsletter import Newsletter  # avoid circular import
 
-        result = [
-            Newsletter(url, auth=self.auth) for url in recommended_newsletter_urls
-        ]
-
-        return result
+        return [Newsletter(u, auth=self.auth) for u in urls]
 
     def get_authors(self) -> List:
         """
