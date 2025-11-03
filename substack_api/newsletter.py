@@ -223,7 +223,23 @@ class Newsletter:
         return [Post(item["canonical_url"], auth=self.auth) for item in post_data]
 
     def _resolve_publication_id(self) -> Optional[int]:
-        """Resolve publication_id via Substack discovery search—no posts needed."""
+        """
+        Resolve publication_id via Substack discovery search—no posts needed.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        Optional[int]
+            The publication ID if found, otherwise None.
+
+        Raises
+        ------
+        requests.HTTPError
+            If the HTTP request to Substack fails.
+        """
         host = _host_from_url(self.url)
         q = host.split(":")[0]  # strip port if present
         params = {
