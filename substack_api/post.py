@@ -1,6 +1,8 @@
 from typing import Any, Dict, Optional
 from urllib.parse import urlparse
 
+import time
+import random
 import requests
 
 from substack_api.auth import SubstackAuth
@@ -60,15 +62,58 @@ class Post:
         if self._post_data is not None and not force_refresh:
             return self._post_data
 
-        # Use authenticated session if available
-        if self.auth and self.auth.authenticated:
-            r = self.auth.get(self.endpoint, timeout=30)
-        else:
-            r = requests.get(self.endpoint, headers=HEADERS, timeout=30)
-        r.raise_for_status()
+        def _parse_retry_after_seconds(response: Optional[requests.Response]) -> Optional[float]:
+            if response is None:
+                return None
+            ra = response.headers.get("Retry-After")
+            if not ra:
+                return None
+            try:
+                return float(ra)
+            except ValueError:
+                return None
 
-        self._post_data = r.json()
-        return self._post_data
+        max_retries = 8
+        base_delay = 1.0
+        max_delay = 120.0
+        jitter = 0.3
+
+        last_http_error: Optional[requests.HTTPError] = None
+
+        for attempt in range(max_retries + 1):
+            # Use authenticated session if available
+            if self.auth and self.auth.authenticated:
+                r = self.auth.get(self.endpoint, timeout=30)
+            else:
+                r = requests.get(self.endpoint, headers=HEADERS, timeout=30)
+
+            try:
+                r.raise_for_status()
+                self._post_data = r.json()
+                return self._post_data
+            except requests.HTTPError as e:
+                last_http_error = e
+                status = getattr(r, "status_code", None)
+
+                retryable = status in (429, 500, 502, 503, 504)
+                if (not retryable) or attempt >= max_retries:
+                    raise
+
+                retry_after = _parse_retry_after_seconds(r)
+                if retry_after is not None:
+                    delay = retry_after
+                else:
+                    delay = min(max_delay, base_delay * (2 ** attempt))
+
+                # Jitter, um gleichzeitige Retries zu entzerren
+                delay = delay * (1.0 + random.uniform(-jitter, jitter))
+                delay = max(0.0, delay)
+                time.sleep(delay)
+
+        # Sollte praktisch nie erreicht werden, aber als Fallback:
+        if last_http_error is not None:
+            raise last_http_error
+        raise RuntimeError("Failed to fetch post data: unknown error")
 
     def get_metadata(self, force_refresh: bool = False) -> Dict[str, Any]:
         """
