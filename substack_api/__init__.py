@@ -2,6 +2,16 @@ from importlib import metadata as _metadata
 
 from .auth import SubstackAuth
 from .category import Category, list_all_categories
+from .chat import (
+    Chat,
+    ChatAccessDenied,
+    ChatAuthenticationRequired,
+    ChatError,
+    ChatMessage,
+    ChatNotFound,
+    ChatThread,
+    ThreadNotFound,
+)
 from .newsletter import Newsletter
 from .post import Post
 from .user import User, resolve_handle_redirect
@@ -18,6 +28,14 @@ __all__ = [
     "Category",
     "Newsletter",
     "SubstackAuth",
+    "Chat",
+    "ChatThread",
+    "ChatMessage",
+    "ChatError",
+    "ChatAuthenticationRequired",
+    "ChatAccessDenied",
+    "ChatNotFound",
+    "ThreadNotFound",
     "resolve_handle_redirect",
     "list_all_categories",
     "__version__",

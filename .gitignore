@@ -7,3 +7,6 @@ dist/
 *.json
 substack_api.egg-info/
 .coverage
+site/
+.claude/
+.devcontainer/

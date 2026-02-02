@@ -10,6 +10,7 @@ This library provides Python interfaces for interacting with Substack's unoffici
 - Get user profile information and subscriptions
 - Fetch post content and metadata
 - Search for posts within newsletters
+- Access publication subscriber chats and threads
 - Access paywalled content **that you have written or paid for** with user-provided authentication
 
 ## Installation
@@ -169,6 +170,32 @@ new_handle = resolve_handle_redirect("oldhandle")
 if new_handle:
     print(f"Handle was renamed to: {new_handle}")
 ```
+
+### Working with Chats
+
+Access publication subscriber chats (requires authentication):
+
+```python
+from substack_api import Chat, SubstackAuth
+
+# Set up authentication (required for chat access)
+auth = SubstackAuth(cookies_path="cookies.json")
+
+# Access a publication's chat using its publication ID
+chat = Chat(4906951, auth=auth)
+
+# Get recent threads
+threads = chat.get_threads(limit=5)
+for thread in threads:
+    print(f"Thread: {thread.body[:80]}...")
+    print(f"  By: {thread.author['name']} on {thread.created_at}")
+    print(f"  {thread.comment_count} messages")
+
+    # Get messages in thread
+    for msg in thread.get_messages():
+        print(f"    [{msg.created_at}] {msg.author['name']}: {msg.body[:60]}...")
+```
+
 ## Limitations
 
 - This is an unofficial library and not endorsed by Substack
