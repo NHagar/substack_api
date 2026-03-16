@@ -12,13 +12,13 @@
         <meta name="author" content="Nick Hagar">
       
       
-        <link rel="canonical" href="https://nhagar.github.io/substack_api/api-reference/">
+        <link rel="canonical" href="https://nhagar.github.io/substack_api/cli/">
       
       
-        <link rel="prev" href="../authentication/">
+        <link rel="prev" href="../installation/">
       
       
-        <link rel="next" href="user/">
+        <link rel="next" href="../user-guide/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Overview - Substack API</title>
+        <title>CLI - Substack API</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#api-reference" class="md-skip">
+        <a href="#command-line-interface" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              CLI
             
           </span>
         </div>
@@ -236,9 +236,11 @@
         
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../cli/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
     
@@ -287,13 +289,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
           
   
   API Reference
@@ -395,10 +395,31 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    CLI
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -408,6 +429,263 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global Options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#newsletter-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Newsletter Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Newsletter Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-posts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get posts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search-posts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Search posts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-podcasts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get podcasts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get recommendations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-authors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get authors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Post Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get metadata
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-paywall-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check paywall status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-user-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get user info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get subscriptions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#category-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Category Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Category Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-all-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      List all categories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-newsletters-in-a-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get newsletters in a category
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resolve-a-renamed-handle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resolve a renamed handle
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -458,30 +736,25 @@
       
   
   
-    
   
   
-  
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -493,7 +766,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
@@ -504,31 +777,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -538,53 +790,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#modules" class="md-nav__link">
-    <span class="md-ellipsis">
-      Modules
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#common-patterns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Common Patterns
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Error Handling
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -597,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="user/" class="md-nav__link">
+      <a href="../api-reference/user/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -619,7 +824,7 @@
   
   
     <li class="md-nav__item">
-      <a href="newsletter/" class="md-nav__link">
+      <a href="../api-reference/newsletter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -641,7 +846,7 @@
   
   
     <li class="md-nav__item">
-      <a href="post/" class="md-nav__link">
+      <a href="../api-reference/post/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -663,7 +868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="category/" class="md-nav__link">
+      <a href="../api-reference/category/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -685,7 +890,7 @@
   
   
     <li class="md-nav__item">
-      <a href="auth/" class="md-nav__link">
+      <a href="../api-reference/auth/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -734,27 +939,237 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#modules" class="md-nav__link">
+  <a href="#global-options" class="md-nav__link">
     <span class="md-ellipsis">
-      Modules
+      Global Options
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#common-patterns" class="md-nav__link">
+  <a href="#newsletter-commands" class="md-nav__link">
     <span class="md-ellipsis">
-      Common Patterns
+      Newsletter Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Newsletter Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-posts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get posts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search-posts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Search posts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-podcasts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get podcasts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get recommendations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-authors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get authors
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Post Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get metadata
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-paywall-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check paywall status
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-user-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get user info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get subscriptions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#category-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Category Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Category Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-all-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      List all categories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-newsletters-in-a-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get newsletters in a category
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resolve-a-renamed-handle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resolve a renamed handle
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
+  <a href="#notes" class="md-nav__link">
     <span class="md-ellipsis">
-      Error Handling
+      Notes
     </span>
   </a>
   
@@ -779,39 +1194,118 @@
   
 
 
-<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
-<p>This section provides detailed documentation for all modules and classes in the Substack API library.</p>
-<h2 id="modules">Modules<a class="headerlink" href="#modules" title="Permanent link">&para;</a></h2>
+<h1 id="command-line-interface">Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permanent link">&para;</a></h1>
+<p>The <code>substack</code> CLI provides terminal access to Substack newsletters, posts, users, and categories. All commands output JSON by default.</p>
+<h2 id="global-options">Global Options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--pretty</code></td>
+<td>Pretty-print JSON output with indentation</td>
+</tr>
+<tr>
+<td><code>--cookies PATH</code></td>
+<td>Path to a cookies JSON file for authenticated access to paywalled content</td>
+</tr>
+</tbody>
+</table>
+<h2 id="newsletter-commands">Newsletter Commands<a class="headerlink" href="#newsletter-commands" title="Permanent link">&para;</a></h2>
+<h3 id="get-posts">Get posts<a class="headerlink" href="#get-posts" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>newsletter<span class="w"> </span>posts<span class="w"> </span>&lt;url&gt;<span class="w"> </span><span class="o">[</span>--sort<span class="w"> </span>new<span class="p">|</span>top<span class="p">|</span>pinned<span class="p">|</span>community<span class="o">]</span><span class="w"> </span><span class="o">[</span>--limit<span class="w"> </span>N<span class="o">]</span>
+</code></pre></div>
+<p>Returns a list of post URLs from the newsletter.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get the 5 newest posts</span>
+substack<span class="w"> </span>newsletter<span class="w"> </span>posts<span class="w"> </span>https://example.substack.com<span class="w"> </span>--limit<span class="w"> </span><span class="m">5</span>
+
+<span class="c1"># Get top posts</span>
+substack<span class="w"> </span>newsletter<span class="w"> </span>posts<span class="w"> </span>https://example.substack.com<span class="w"> </span>--sort<span class="w"> </span>top<span class="w"> </span>--limit<span class="w"> </span><span class="m">10</span>
+</code></pre></div>
+<h3 id="search-posts">Search posts<a class="headerlink" href="#search-posts" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>newsletter<span class="w"> </span>search<span class="w"> </span>&lt;url&gt;<span class="w"> </span>&lt;query&gt;<span class="w"> </span><span class="o">[</span>--limit<span class="w"> </span>N<span class="o">]</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>newsletter<span class="w"> </span>search<span class="w"> </span>https://example.substack.com<span class="w"> </span><span class="s2">&quot;machine learning&quot;</span><span class="w"> </span>--limit<span class="w"> </span><span class="m">3</span>
+</code></pre></div>
+<h3 id="get-podcasts">Get podcasts<a class="headerlink" href="#get-podcasts" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>newsletter<span class="w"> </span>podcasts<span class="w"> </span>&lt;url&gt;<span class="w"> </span><span class="o">[</span>--limit<span class="w"> </span>N<span class="o">]</span>
+</code></pre></div>
+<h3 id="get-recommendations">Get recommendations<a class="headerlink" href="#get-recommendations" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>newsletter<span class="w"> </span>recs<span class="w"> </span>&lt;url&gt;
+</code></pre></div>
+<p>Returns URLs of newsletters recommended by the given newsletter.</p>
+<h3 id="get-authors">Get authors<a class="headerlink" href="#get-authors" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>newsletter<span class="w"> </span>authors<span class="w"> </span>&lt;url&gt;
+</code></pre></div>
+<p>Returns usernames of the newsletter's authors.</p>
+<h2 id="post-commands">Post Commands<a class="headerlink" href="#post-commands" title="Permanent link">&para;</a></h2>
+<h3 id="get-metadata">Get metadata<a class="headerlink" href="#get-metadata" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>post<span class="w"> </span>metadata<span class="w"> </span>&lt;url&gt;
+</code></pre></div>
+<p>Returns the full metadata dictionary for a post.</p>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>post<span class="w"> </span>metadata<span class="w"> </span>https://example.substack.com/p/my-post<span class="w"> </span>--pretty
+</code></pre></div>
+<h3 id="get-content">Get content<a class="headerlink" href="#get-content" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>post<span class="w"> </span>content<span class="w"> </span>&lt;url&gt;
+</code></pre></div>
+<p>Returns the post URL and its HTML body content.</p>
+<h3 id="check-paywall-status">Check paywall status<a class="headerlink" href="#check-paywall-status" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>post<span class="w"> </span>paywalled<span class="w"> </span>&lt;url&gt;
+</code></pre></div>
+<p>Returns whether the post is paywalled.</p>
+<h2 id="user-commands">User Commands<a class="headerlink" href="#user-commands" title="Permanent link">&para;</a></h2>
+<h3 id="get-user-info">Get user info<a class="headerlink" href="#get-user-info" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>user<span class="w"> </span>info<span class="w"> </span>&lt;username&gt;
+</code></pre></div>
+<p>Returns the full user profile data.</p>
+<h3 id="get-subscriptions">Get subscriptions<a class="headerlink" href="#get-subscriptions" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>user<span class="w"> </span>subscriptions<span class="w"> </span>&lt;username&gt;
+</code></pre></div>
+<p>Returns the list of newsletters the user is subscribed to.</p>
+<h2 id="category-commands">Category Commands<a class="headerlink" href="#category-commands" title="Permanent link">&para;</a></h2>
+<h3 id="list-all-categories">List all categories<a class="headerlink" href="#list-all-categories" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>categories
+</code></pre></div>
+<p>Returns all available newsletter categories with their names and IDs.</p>
+<h3 id="get-newsletters-in-a-category">Get newsletters in a category<a class="headerlink" href="#get-newsletters-in-a-category" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>category<span class="w"> </span>newsletters<span class="w"> </span>--name<span class="w"> </span>&lt;name&gt;<span class="w"> </span><span class="o">[</span>--metadata<span class="o">]</span>
+substack<span class="w"> </span>category<span class="w"> </span>newsletters<span class="w"> </span>--id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--metadata<span class="o">]</span>
+</code></pre></div>
+<p>Returns newsletter URLs in the category. Add <code>--metadata</code> to get full newsletter metadata instead.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># By name</span>
+substack<span class="w"> </span>category<span class="w"> </span>newsletters<span class="w"> </span>--name<span class="w"> </span>Technology
+
+<span class="c1"># By ID with full metadata</span>
+substack<span class="w"> </span>category<span class="w"> </span>newsletters<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--metadata<span class="w"> </span>--pretty
+</code></pre></div>
+<h2 id="other-commands">Other Commands<a class="headerlink" href="#other-commands" title="Permanent link">&para;</a></h2>
+<h3 id="resolve-a-renamed-handle">Resolve a renamed handle<a class="headerlink" href="#resolve-a-renamed-handle" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>resolve-handle<span class="w"> </span>&lt;handle&gt;
+</code></pre></div>
+<p>Checks if a Substack user handle has been renamed and returns the new handle.</p>
+<h3 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>quickstart
+</code></pre></div>
+<p>Prints a concise reference guide covering all CLI commands and options.</p>
+<h3 id="version">Version<a class="headerlink" href="#version" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>version
+</code></pre></div>
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
+<p>To access paywalled content from the CLI, pass <code>--cookies</code> before the command:</p>
+<div class="highlight"><pre><span></span><code>substack<span class="w"> </span>--cookies<span class="w"> </span>cookies.json<span class="w"> </span>post<span class="w"> </span>content<span class="w"> </span>https://example.substack.com/p/paid-post
+substack<span class="w"> </span>--cookies<span class="w"> </span>cookies.json<span class="w"> </span>newsletter<span class="w"> </span>posts<span class="w"> </span>https://example.substack.com
+</code></pre></div>
+<p>See the <a href="../authentication/">Authentication Guide</a> for details on obtaining cookies.</p>
+<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="user/">User</a>: Access to Substack user profiles and subscriptions</li>
-<li><a href="newsletter/">Newsletter</a>: Access to Substack publications, posts, and podcasts</li>
-<li><a href="post/">Post</a>: Access to individual Substack post content and metadata</li>
-<li><a href="category/">Category</a>: Discovery of newsletters by category</li>
-<li><a href="auth/">SubstackAuth</a>: Authentication for accessing paywalled content</li>
+<li>API calls include a 2-second delay to be respectful to Substack's servers. Use <code>--limit</code> to avoid long waits on large newsletters.</li>
+<li>All output is JSON. Pipe to <code>jq</code> for further processing, or use <code>--pretty</code> for readability.</li>
+<li>The CLI can also be invoked as <code>python -m substack_api</code>.</li>
 </ul>
-<p>Each module documentation includes:</p>
-<ul>
-<li>Class properties and methods</li>
-<li>Method parameters</li>
-<li>Return types</li>
-<li>Example usage</li>
-</ul>
-<h2 id="common-patterns">Common Patterns<a class="headerlink" href="#common-patterns" title="Permanent link">&para;</a></h2>
-<p>Most classes in the library follow these patterns:</p>
-<ol>
-<li><strong>Initialization</strong>: Create an object by providing an identifier (URL, username, etc.)</li>
-<li><strong>Data Retrieval</strong>: Methods that fetch data from the Substack API</li>
-<li><strong>Caching</strong>: Data is cached to avoid unnecessary API requests</li>
-<li><strong>Force Refresh</strong>: Most methods accept a <code>force_refresh</code> parameter to bypass the cache</li>
-</ol>
-<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
-<p>The library uses standard Python exceptions:</p>
-<ul>
-<li><code>requests.exceptions.HTTPError</code>: Raised when an HTTP request fails</li>
-<li><code>ValueError</code>: Raised when invalid parameters are provided</li>
-<li><code>KeyError</code>: Raised when expected data is not found in the API response</li>
-</ul>
-<p>You should wrap API calls in try/except blocks to handle these exceptions gracefully.</p>
 
 
 
