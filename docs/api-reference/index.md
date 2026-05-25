@@ -8,6 +8,7 @@ This section provides detailed documentation for all modules and classes in the 
 - [Newsletter](newsletter.md): Access to Substack publications, posts, and podcasts
 - [Post](post.md): Access to individual Substack post content and metadata
 - [Category](category.md): Discovery of newsletters by category
+- [Chat](chat.md): Access to publication subscriber chats and threads
 - [SubstackAuth](auth.md): Authentication for accessing paywalled content
 
 Each module documentation includes:

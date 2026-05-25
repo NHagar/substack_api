@@ -52,7 +52,6 @@ plugins:
 nav:
   - Home: index.md
   - Installation: installation.md
-  - CLI: cli.md
   - User Guide: user-guide.md
   - Authentication: authentication.md
   - API Reference:
@@ -61,6 +60,7 @@ nav:
       - Newsletter: api-reference/newsletter.md
       - Post: api-reference/post.md
       - Category: api-reference/category.md
+      - Chat: api-reference/chat.md
       - SubstackAuth: api-reference/auth.md
 
 # Extra CSS

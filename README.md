@@ -10,6 +10,7 @@ This library provides Python interfaces for interacting with Substack's unoffici
 - Get user profile information and subscriptions
 - Fetch post content and metadata
 - Search for posts within newsletters
+- Access publication subscriber chats and threads
 - Access paywalled content **that you have written or paid for** with user-provided authentication
 
 ## Installation
@@ -18,38 +19,11 @@ This library provides Python interfaces for interacting with Substack's unoffici
 # Using pip
 pip install substack-api
 
-# Using uv
-uv add substack-api
+# Using poetry
+poetry add substack-api
 ```
 
-## Command-Line Interface
-
-The library includes a CLI for quick access from the terminal. All commands output JSON by default.
-
-```bash
-# Get the 5 newest posts from a newsletter
-substack newsletter posts https://example.substack.com --limit 5
-
-# Search for posts
-substack newsletter search https://example.substack.com "machine learning"
-
-# Get metadata for a specific post
-substack post metadata https://example.substack.com/p/my-post --pretty
-
-# Look up a user's subscriptions
-substack user subscriptions username
-
-# Browse categories
-substack categories
-substack category newsletters --name Technology
-
-# Run the quickstart guide for a full command reference
-substack quickstart
-```
-
-Use `--pretty` for human-readable output and `--cookies <path>` for authenticated access to paywalled content.
-
-## Python Usage Examples
+## Usage Examples
 
 ### Working with Newsletters
 
@@ -196,6 +170,32 @@ new_handle = resolve_handle_redirect("oldhandle")
 if new_handle:
     print(f"Handle was renamed to: {new_handle}")
 ```
+
+### Working with Chats
+
+Access publication subscriber chats (requires authentication):
+
+```python
+from substack_api import Chat, SubstackAuth
+
+# Set up authentication (required for chat access)
+auth = SubstackAuth(cookies_path="cookies.json")
+
+# Access a publication's chat using its publication ID
+chat = Chat(4906951, auth=auth)
+
+# Get recent threads
+threads = chat.get_threads(limit=5)
+for thread in threads:
+    print(f"Thread: {thread.body[:80]}...")
+    print(f"  By: {thread.author['name']} on {thread.created_at}")
+    print(f"  {thread.comment_count} messages")
+
+    # Get messages in thread
+    for msg in thread.get_messages():
+        print(f"    [{msg.created_at}] {msg.author['name']}: {msg.body[:60]}...")
+```
+
 ## Limitations
 
 - This is an unofficial library and not endorsed by Substack
