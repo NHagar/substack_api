@@ -322,6 +322,43 @@ class TestChatThread:
         thread.get_messages(force_refresh=True)
         assert mock_auth.get.call_count == 2
 
+    def test_get_messages_paginates_before(self, mock_auth):
+        """Test get_messages fetches all pages when moreBefore is True."""
+        older_page = {
+            "replies": [
+                {"comment": {"id": "old-msg-1", "body": "Older message", "created_at": "2026-01-20T10:00:00.000Z", "mediaAttachments": [], "reaction_count": 0}, "user": {"id": 1, "name": "User A", "handle": "usera"}},
+            ],
+            "moreBefore": False,
+            "moreAfter": False,
+        }
+        initial_page = {
+            "post": {"communityPost": {"id": "test-uuid", "body": "thread", "comment_count": 2}, "user": {"id": 1, "name": "User A"}},
+            "replies": [
+                {"comment": {"id": "new-msg-1", "body": "Newer message", "created_at": "2026-01-20T14:00:00.000Z", "mediaAttachments": [], "reaction_count": 0}, "user": {"id": 2, "name": "User B", "handle": "userb"}},
+            ],
+            "moreBefore": True,
+            "moreAfter": False,
+        }
+
+        def side_effect(url, params=None, timeout=None):
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            if params and "before_id" in params:
+                mock_response.json.return_value = older_page
+            else:
+                mock_response.json.return_value = initial_page
+            return mock_response
+
+        mock_auth.get.side_effect = side_effect
+
+        thread = ChatThread(publication_id=4906951, thread_id="test-uuid", auth=mock_auth)
+        messages = thread.get_messages()
+
+        assert len(messages) == 2
+        assert messages[0].id == "old-msg-1"
+        assert messages[1].id == "new-msg-1"
+        assert mock_auth.get.call_count == 2
+
     def test_get_messages_unauthenticated(self, mock_unauth):
         """Test ChatThread.get_messages raises error when not authenticated."""
         thread = ChatThread(

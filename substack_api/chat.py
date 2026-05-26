@@ -251,11 +251,37 @@ class ChatThread:
             raise ThreadNotFound(f"Thread with ID '{self.thread_id}' was not found.")
 
         response.raise_for_status()
-        self._messages_data = response.json()
+        data = response.json()
 
-        # Also update thread data from the response if available
-        if "post" in self._messages_data and self._thread_data is None:
-            self._thread_data = self._messages_data["post"]
+        if "post" in data and self._thread_data is None:
+            self._thread_data = data["post"]
+
+        # Paginate backwards (older messages not included in the initial window)
+        all_replies = list(data.get("replies", []))
+        while data.get("moreBefore") and all_replies:
+            r = self.auth.get(
+                url,
+                params={"order": "asc", "before_id": all_replies[0]["comment"]["id"]},
+                timeout=30,
+            )
+            r.raise_for_status()
+            data = r.json()
+            all_replies = data.get("replies", []) + all_replies
+
+        # Paginate forwards (in case the initial window is not at the latest end)
+        data = response.json()
+        while data.get("moreAfter") and all_replies:
+            r = self.auth.get(
+                url,
+                params={"order": "asc", "after_id": all_replies[-1]["comment"]["id"]},
+                timeout=30,
+            )
+            r.raise_for_status()
+            data = r.json()
+            all_replies = all_replies + data.get("replies", [])
+
+        self._messages_data = response.json()
+        self._messages_data["replies"] = all_replies
 
         return self._messages_data
 
