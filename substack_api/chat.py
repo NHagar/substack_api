@@ -151,6 +151,27 @@ class ChatMessage:
         return self._data["comment"].get("reaction_count", 0)
 
     @property
+    def reply_count(self) -> int:
+        """The number of sub-replies on this message."""
+        return self._data["comment"].get("reply_count", 0)
+
+    @property
+    def pub_roles(self) -> Optional[Dict[str, Any]]:
+        """
+        Publication role information for the message author.
+
+        Returns a dict with a ``role`` key; ``role == 'admin'`` indicates the
+        publication owner.  ``None`` means role data is not available.
+        """
+        return self._data.get("pub_roles")
+
+    @property
+    def is_owner(self) -> bool:
+        """True if the author is the publication owner (pub_roles.role == 'admin')."""
+        pr = self._data.get("pub_roles") or {}
+        return pr.get("role") == "admin"
+
+    @property
     def raw_data(self) -> Dict[str, Any]:
         """The complete raw data dictionary from the API."""
         return self._data
@@ -364,6 +385,72 @@ class ChatThread:
         if limit is not None:
             return messages[:limit]
         return messages
+
+    def get_sub_replies(
+        self, message: Union[str, "ChatMessage"]
+    ) -> List[ChatMessage]:
+        """
+        Get sub-replies for a top-level reply in this thread.
+
+        Parameters
+        ----------
+        message : Union[str, ChatMessage]
+            The parent reply: either a ChatMessage object or its UUID string.
+
+        Returns
+        -------
+        List[ChatMessage]
+            Sub-replies in ascending chronological order.
+
+        Raises
+        ------
+        ChatAuthenticationRequired
+            If authentication is required.
+        ThreadNotFound
+            If the parent reply is not found.
+        """
+        parent_id = message.id if isinstance(message, ChatMessage) else message
+        url = f"{BASE_URL}/community/comments/{parent_id}/comments"
+        params = {"order": "asc", "initial": "true"}
+
+        response = self.auth.get(url, params=params, timeout=30)
+
+        if response.status_code == 401:
+            raise ChatAuthenticationRequired(
+                "Authentication is required to access sub-replies."
+            )
+        elif response.status_code == 404:
+            raise ThreadNotFound(
+                f"Parent reply with ID '{parent_id}' was not found."
+            )
+
+        response.raise_for_status()
+        data = response.json()
+
+        all_replies = list(data.get("replies", []))
+
+        while data.get("moreBefore") and all_replies:
+            r = self.auth.get(
+                url,
+                params={"order": "asc", "before_id": all_replies[0]["comment"]["id"]},
+                timeout=30,
+            )
+            r.raise_for_status()
+            data = r.json()
+            all_replies = data.get("replies", []) + all_replies
+
+        data = response.json()
+        while data.get("moreAfter") and all_replies:
+            r = self.auth.get(
+                url,
+                params={"order": "asc", "after_id": all_replies[-1]["comment"]["id"]},
+                timeout=30,
+            )
+            r.raise_for_status()
+            data = r.json()
+            all_replies = all_replies + data.get("replies", [])
+
+        return [ChatMessage(reply) for reply in all_replies]
 
 
 class Chat:

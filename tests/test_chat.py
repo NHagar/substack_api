@@ -669,3 +669,182 @@ class TestIntegration:
         assert first_message.id is not None
         assert first_message.body is not None
         assert first_message.created_at is not None
+
+
+# ============================================================
+# New property tests: reply_count, is_owner, pub_roles
+# ============================================================
+
+
+class TestChatMessageNewProperties:
+    def _make_message(self, pub_roles=None, reply_count=0):
+        return ChatMessage({
+            "comment": {
+                "id": "test-id",
+                "body": "Test body",
+                "created_at": "2026-01-20T14:39:02.189Z",
+                "mediaAttachments": [],
+                "reaction_count": 0,
+                "reply_count": reply_count,
+            },
+            "user": {"id": 1, "name": "Test User", "handle": "testuser"},
+            "pub_roles": pub_roles,
+        })
+
+    def test_reply_count_zero(self):
+        msg = self._make_message(reply_count=0)
+        assert msg.reply_count == 0
+
+    def test_reply_count_nonzero(self):
+        msg = self._make_message(reply_count=5)
+        assert msg.reply_count == 5
+
+    def test_is_owner_true(self):
+        msg = self._make_message(pub_roles={"role": "admin"})
+        assert msg.is_owner is True
+
+    def test_is_owner_false_subscriber(self):
+        msg = self._make_message(pub_roles={"role": None})
+        assert msg.is_owner is False
+
+    def test_is_owner_false_no_pub_roles(self):
+        msg = self._make_message(pub_roles=None)
+        assert msg.is_owner is False
+
+    def test_pub_roles_present(self):
+        roles = {"role": "admin", "membership_state": "subscribed"}
+        msg = self._make_message(pub_roles=roles)
+        assert msg.pub_roles == roles
+
+    def test_pub_roles_none(self):
+        msg = self._make_message(pub_roles=None)
+        assert msg.pub_roles is None
+
+
+# ============================================================
+# get_sub_replies tests
+# ============================================================
+
+
+class TestGetSubReplies:
+    def _sub_reply_data(self, reply_id, parent_id, body):
+        return {
+            "comment": {
+                "id": reply_id,
+                "body": body,
+                "created_at": "2026-01-20T15:00:00.000Z",
+                "mediaAttachments": [],
+                "reaction_count": 0,
+                "reply_count": 0,
+                "parent_id": parent_id,
+            },
+            "user": {"id": 99, "name": "Replier", "handle": "replier"},
+            "pub_roles": None,
+        }
+
+    def test_get_sub_replies_by_string_id(self, mock_auth):
+        parent_id = "parent-uuid-1"
+        sub_data = {
+            "post": {},
+            "parent": {},
+            "replies": [
+                self._sub_reply_data("sub-1", parent_id, "Sub-reply A"),
+                self._sub_reply_data("sub-2", parent_id, "Sub-reply B"),
+            ],
+            "moreAfter": False,
+            "moreBefore": False,
+        }
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = sub_data
+        mock_auth.get.return_value = mock_response
+
+        thread = ChatThread(publication_id=1234, thread_id="thread-uuid", auth=mock_auth)
+        sub_replies = thread.get_sub_replies(parent_id)
+
+        assert len(sub_replies) == 2
+        assert all(isinstance(sr, ChatMessage) for sr in sub_replies)
+        assert sub_replies[0].id == "sub-1"
+        assert sub_replies[1].id == "sub-2"
+        # Verify the correct endpoint was called
+        call_url = mock_auth.get.call_args[0][0]
+        assert f"/community/comments/{parent_id}/comments" in call_url
+
+    def test_get_sub_replies_by_chat_message(self, mock_auth):
+        parent_id = "parent-uuid-2"
+        parent_message = ChatMessage({
+            "comment": {"id": parent_id, "body": "Parent", "created_at": "2026-01-20T14:00:00.000Z",
+                        "mediaAttachments": [], "reaction_count": 0, "reply_count": 1},
+            "user": {"id": 1, "name": "Author", "handle": "author"},
+            "pub_roles": None,
+        })
+        sub_data = {
+            "replies": [self._sub_reply_data("sub-only", parent_id, "Only sub-reply")],
+            "moreAfter": False,
+            "moreBefore": False,
+        }
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = sub_data
+        mock_auth.get.return_value = mock_response
+
+        thread = ChatThread(publication_id=1234, thread_id="thread-uuid", auth=mock_auth)
+        sub_replies = thread.get_sub_replies(parent_message)
+
+        assert len(sub_replies) == 1
+        assert sub_replies[0].body == "Only sub-reply"
+        call_url = mock_auth.get.call_args[0][0]
+        assert f"/community/comments/{parent_id}/comments" in call_url
+
+    def test_get_sub_replies_401_raises(self, mock_auth):
+        mock_response = MagicMock()
+        mock_response.status_code = 401
+        mock_auth.get.return_value = mock_response
+
+        thread = ChatThread(publication_id=1234, thread_id="thread-uuid", auth=mock_auth)
+        with pytest.raises(ChatAuthenticationRequired):
+            thread.get_sub_replies("some-parent-id")
+
+    def test_get_sub_replies_404_raises(self, mock_auth):
+        mock_response = MagicMock()
+        mock_response.status_code = 404
+        mock_auth.get.return_value = mock_response
+
+        thread = ChatThread(publication_id=1234, thread_id="thread-uuid", auth=mock_auth)
+        with pytest.raises(ThreadNotFound):
+            thread.get_sub_replies("nonexistent-parent-id")
+
+    def test_get_sub_replies_paginates_after(self, mock_auth):
+        parent_id = "parent-uuid-3"
+        page1 = {
+            "replies": [self._sub_reply_data("sub-a", parent_id, "Sub A")],
+            "moreAfter": True,
+            "moreBefore": False,
+        }
+        page2 = {
+            "replies": [self._sub_reply_data("sub-b", parent_id, "Sub B")],
+            "moreAfter": False,
+            "moreBefore": False,
+        }
+
+        call_count = {"n": 0}
+
+        def side_effect(url, params=None, timeout=None):
+            call_count["n"] += 1
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            if params and "after_id" in params:
+                mock_response.json.return_value = page2
+            else:
+                mock_response.json.return_value = page1
+            return mock_response
+
+        mock_auth.get.side_effect = side_effect
+
+        thread = ChatThread(publication_id=1234, thread_id="thread-uuid", auth=mock_auth)
+        sub_replies = thread.get_sub_replies(parent_id)
+
+        assert len(sub_replies) == 2
+        assert sub_replies[0].id == "sub-a"
+        assert sub_replies[1].id == "sub-b"
+        assert call_count["n"] == 2
