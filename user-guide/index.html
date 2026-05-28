@@ -557,6 +557,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#working-with-chats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Chats
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Chats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reading-messages-in-threads" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reading Messages in Threads
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-handling-for-chats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling for Chats
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#authentication" class="md-nav__link">
     <span class="md-ellipsis">
       Authentication
@@ -761,6 +794,28 @@
   
   
     <li class="md-nav__item">
+      <a href="../api-reference/chat/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chat
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../api-reference/auth/" class="md-nav__link">
         
   
@@ -900,6 +955,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#working-with-chats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Chats
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Chats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reading-messages-in-threads" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reading Messages in Threads
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-handling-for-chats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Error Handling for Chats
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#authentication" class="md-nav__link">
     <span class="md-ellipsis">
       Authentication
@@ -938,12 +1026,13 @@
 
 <h1 id="user-guide">User Guide<a class="headerlink" href="#user-guide" title="Permanent link">&para;</a></h1>
 <h2 id="basic-concepts">Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permanent link">&para;</a></h2>
-<p>The Substack API library is organized around five main classes:</p>
+<p>The Substack API library is organized around these main classes:</p>
 <ul>
 <li><code>User</code> - Represents a Substack user profile</li>
 <li><code>Newsletter</code> - Represents a Substack publication</li>
 <li><code>Post</code> - Represents an individual post on Substack</li>
 <li><code>Category</code> - Represents a Substack category of newsletters</li>
+<li><code>Chat</code> - Represents a publication's subscriber chat</li>
 <li><code>SubstackAuth</code> - Handles authentication for accessing paywalled content</li>
 </ul>
 <p>Each class provides methods to access different aspects of the Substack ecosystem.</p>
@@ -1069,6 +1158,55 @@
 
 <span class="c1"># Get full metadata for newsletters in this category</span>
 <span class="n">newsletter_metadata</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">get_newsletter_metadata</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="working-with-chats">Working with Chats<a class="headerlink" href="#working-with-chats" title="Permanent link">&para;</a></h2>
+<p>The <code>Chat</code> class allows you to access publication subscriber chats. This feature requires authentication.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chat</span><span class="p">,</span> <span class="n">SubstackAuth</span>
+
+<span class="c1"># Set up authentication (required for chat access)</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+
+<span class="c1"># Access a publication&#39;s chat using its publication ID</span>
+<span class="n">chat</span> <span class="o">=</span> <span class="n">Chat</span><span class="p">(</span><span class="mi">4906951</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+
+<span class="c1"># Get recent threads</span>
+<span class="n">threads</span> <span class="o">=</span> <span class="n">chat</span><span class="o">.</span><span class="n">get_threads</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Thread: </span><span class="si">{</span><span class="n">thread</span><span class="o">.</span><span class="n">body</span><span class="p">[:</span><span class="mi">80</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  By: </span><span class="si">{</span><span class="n">thread</span><span class="o">.</span><span class="n">author</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">thread</span><span class="o">.</span><span class="n">created_at</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">thread</span><span class="o">.</span><span class="n">comment_count</span><span class="si">}</span><span class="s2"> messages&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="reading-messages-in-threads">Reading Messages in Threads<a class="headerlink" href="#reading-messages-in-threads" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chat</span><span class="p">,</span> <span class="n">SubstackAuth</span>
+
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+<span class="n">chat</span> <span class="o">=</span> <span class="n">Chat</span><span class="p">(</span><span class="mi">4906951</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+
+<span class="c1"># Get threads and read messages</span>
+<span class="n">threads</span> <span class="o">=</span> <span class="n">chat</span><span class="o">.</span><span class="n">get_threads</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">threads</span><span class="p">:</span>
+    <span class="n">thread</span> <span class="o">=</span> <span class="n">threads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="n">get_messages</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">created_at</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">author</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">body</span><span class="p">[:</span><span class="mi">60</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="error-handling-for-chats">Error Handling for Chats<a class="headerlink" href="#error-handling-for-chats" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">substack_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chat</span><span class="p">,</span> <span class="n">SubstackAuth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">substack_api.chat</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChatAuthenticationRequired</span><span class="p">,</span> <span class="n">ChatAccessDenied</span><span class="p">,</span> <span class="n">ChatNotFound</span>
+
+<span class="n">auth</span> <span class="o">=</span> <span class="n">SubstackAuth</span><span class="p">(</span><span class="n">cookies_path</span><span class="o">=</span><span class="s2">&quot;cookies.json&quot;</span><span class="p">)</span>
+<span class="n">chat</span> <span class="o">=</span> <span class="n">Chat</span><span class="p">(</span><span class="mi">4906951</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">threads</span> <span class="o">=</span> <span class="n">chat</span><span class="o">.</span><span class="n">get_threads</span><span class="p">()</span>
+<span class="k">except</span> <span class="n">ChatAuthenticationRequired</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Authentication required - check your cookies&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ChatAccessDenied</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You don&#39;t have access to this chat&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ChatNotFound</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Publication not found&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
 <p>The library supports authentication to access paywalled content. See the <a href="../authentication/">Authentication Guide</a> for detailed information on setting up and using authentication.</p>
