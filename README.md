@@ -19,11 +19,38 @@ This library provides Python interfaces for interacting with Substack's unoffici
 # Using pip
 pip install substack-api
 
-# Using poetry
-poetry add substack-api
+# Using uv
+uv add substack-api
 ```
 
-## Usage Examples
+## Command-Line Interface
+
+The library includes a CLI for quick access from the terminal. All commands output JSON by default.
+
+```bash
+# Get the 5 newest posts from a newsletter
+substack newsletter posts https://example.substack.com --limit 5
+
+# Search for posts
+substack newsletter search https://example.substack.com "machine learning"
+
+# Get metadata for a specific post
+substack post metadata https://example.substack.com/p/my-post --pretty
+
+# Look up a user's subscriptions
+substack user subscriptions username
+
+# Browse categories
+substack categories
+substack category newsletters --name Technology
+
+# Run the quickstart guide for a full command reference
+substack quickstart
+```
+
+Use `--pretty` for human-readable output and `--cookies <path>` for authenticated access to paywalled content.
+
+## Python Usage Examples
 
 ### Working with Newsletters
 

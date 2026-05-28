@@ -331,6 +331,9 @@ class ChatThread:
         """
         if self._thread_data:
             return self._thread_data.get("user", {})
+        self._fetch_thread_data()
+        if self._thread_data:
+            return self._thread_data.get("user", {})
         return {}
 
     @property
@@ -338,11 +341,17 @@ class ChatThread:
         """The ISO timestamp when the thread was created."""
         if self._thread_data:
             return self._thread_data.get("communityPost", {}).get("created_at", "")
+        self._fetch_thread_data()
+        if self._thread_data:
+            return self._thread_data.get("communityPost", {}).get("created_at", "")
         return ""
 
     @property
     def comment_count(self) -> int:
         """The number of replies/comments in this thread."""
+        if self._thread_data:
+            return self._thread_data.get("communityPost", {}).get("comment_count", 0)
+        self._fetch_thread_data()
         if self._thread_data:
             return self._thread_data.get("communityPost", {}).get("comment_count", 0)
         return 0
@@ -409,6 +418,11 @@ class ChatThread:
         ThreadNotFound
             If the parent reply is not found.
         """
+        if not self.auth or not self.auth.authenticated:
+            raise ChatAuthenticationRequired(
+                "Authentication is required to access sub-replies."
+            )
+
         parent_id = message.id if isinstance(message, ChatMessage) else message
         url = f"{BASE_URL}/community/comments/{parent_id}/comments"
         params = {"order": "asc", "initial": "true"}
@@ -418,6 +432,14 @@ class ChatThread:
         if response.status_code == 401:
             raise ChatAuthenticationRequired(
                 "Authentication is required to access sub-replies."
+            )
+        elif response.status_code == 402:
+            raise ChatPaymentRequired(
+                "Access to this chat requires a paid subscription or a higher subscription tier."
+            )
+        elif response.status_code == 403:
+            raise ChatAccessDenied(
+                "You do not have permission to access this thread."
             )
         elif response.status_code == 404:
             raise ThreadNotFound(
@@ -623,8 +645,9 @@ class Chat:
 
         Notes
         -----
-        This creates a ChatThread object without pre-fetched data.
-        The thread data will be fetched when properties are accessed.
+        This creates a ChatThread without pre-fetched data. All properties
+        (``body``, ``author``, ``created_at``, ``comment_count``) fetch from
+        the API on first access and cache the result.
         """
         return ChatThread(
             publication_id=self._publication_id,

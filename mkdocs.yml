@@ -52,6 +52,7 @@ plugins:
 nav:
   - Home: index.md
   - Installation: installation.md
+  - CLI: cli.md
   - User Guide: user-guide.md
   - Authentication: authentication.md
   - API Reference:
