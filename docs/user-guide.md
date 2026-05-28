@@ -2,12 +2,13 @@
 
 ## Basic Concepts
 
-The Substack API library is organized around five main classes:
+The Substack API library is organized around these main classes:
 
 - `User` - Represents a Substack user profile
 - `Newsletter` - Represents a Substack publication
 - `Post` - Represents an individual post on Substack
 - `Category` - Represents a Substack category of newsletters
+- `Chat` - Represents a publication's subscriber chat
 - `SubstackAuth` - Handles authentication for accessing paywalled content
 
 Each class provides methods to access different aspects of the Substack ecosystem.
@@ -161,6 +162,65 @@ newsletters = category.get_newsletters()
 
 # Get full metadata for newsletters in this category
 newsletter_metadata = category.get_newsletter_metadata()
+```
+
+## Working with Chats
+
+The `Chat` class allows you to access publication subscriber chats. This feature requires authentication.
+
+```python
+from substack_api import Chat, SubstackAuth
+
+# Set up authentication (required for chat access)
+auth = SubstackAuth(cookies_path="cookies.json")
+
+# Access a publication's chat using its publication ID
+chat = Chat(4906951, auth=auth)
+
+# Get recent threads
+threads = chat.get_threads(limit=5)
+
+for thread in threads:
+    print(f"Thread: {thread.body[:80]}...")
+    print(f"  By: {thread.author['name']} on {thread.created_at}")
+    print(f"  {thread.comment_count} messages")
+```
+
+### Reading Messages in Threads
+
+```python
+from substack_api import Chat, SubstackAuth
+
+auth = SubstackAuth(cookies_path="cookies.json")
+chat = Chat(4906951, auth=auth)
+
+# Get threads and read messages
+threads = chat.get_threads(limit=1)
+if threads:
+    thread = threads[0]
+    messages = thread.get_messages()
+
+    for msg in messages:
+        print(f"[{msg.created_at}] {msg.author['name']}: {msg.body[:60]}...")
+```
+
+### Error Handling for Chats
+
+```python
+from substack_api import Chat, SubstackAuth
+from substack_api.chat import ChatAuthenticationRequired, ChatAccessDenied, ChatNotFound
+
+auth = SubstackAuth(cookies_path="cookies.json")
+chat = Chat(4906951, auth=auth)
+
+try:
+    threads = chat.get_threads()
+except ChatAuthenticationRequired:
+    print("Authentication required - check your cookies")
+except ChatAccessDenied:
+    print("You don't have access to this chat")
+except ChatNotFound:
+    print("Publication not found")
 ```
 
 ## Authentication
