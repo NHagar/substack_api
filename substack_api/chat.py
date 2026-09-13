@@ -531,7 +531,9 @@ class Chat:
         """The publication ID for this chat."""
         return self._publication_id
 
-    def _fetch_threads_data(self, force_refresh: bool = False) -> Dict[str, Any]:
+    def _fetch_threads_data(
+        self, force_refresh: bool = False, limit: Optional[int] = None
+    ) -> Dict[str, Any]:
         """
         Fetch threads data from the API.
 
@@ -539,6 +541,8 @@ class Chat:
         ----------
         force_refresh : bool
             If True, fetch fresh data even if cached data exists.
+        limit : Optional[int]
+            Stop after fetching this many threads.
 
         Returns
         -------
@@ -556,6 +560,9 @@ class Chat:
         """
         if self._threads_data is not None and not force_refresh:
             return self._threads_data
+
+        if force_refresh:
+            self._threads_data = None
 
         if not self.auth or not self.auth.authenticated:
             raise ChatAuthenticationRequired(
@@ -584,8 +591,28 @@ class Chat:
             )
 
         response.raise_for_status()
-        self._threads_data = response.json()
-        return self._threads_data
+        data = response.json()
+
+        while data.get("moreBefore") and data.get("threads"):
+            if limit is not None and len(data["threads"]) >= limit:
+                break
+
+            before = data["threads"][-1]["communityPost"]["created_at"]
+            response = self.auth.get(url, params={"before": before}, timeout=30)
+            response.raise_for_status()
+            page = response.json()
+            page_threads = page.get("threads", [])
+
+            if not page_threads:
+                break
+
+            data["threads"].extend(page_threads)
+            data["moreBefore"] = page.get("moreBefore", False)
+
+        if limit is None:
+            self._threads_data = data
+
+        return data
 
     def get_threads(
         self, limit: Optional[int] = None, force_refresh: bool = False
@@ -596,9 +623,7 @@ class Chat:
         Parameters
         ----------
         limit : Optional[int]
-            Client-side truncation of the first page of results returned by the
-            API. The full page is always fetched; this just slices the list.
-            If None, returns all threads from the page.
+            Maximum threads returned.
         force_refresh : bool
             If True, fetch fresh data from the API.
 
@@ -614,7 +639,7 @@ class Chat:
         ChatNotFound
             If the publication is not found.
         """
-        data = self._fetch_threads_data(force_refresh=force_refresh)
+        data = self._fetch_threads_data(force_refresh=force_refresh, limit=limit)
         threads = [
             ChatThread(
                 publication_id=self._publication_id,

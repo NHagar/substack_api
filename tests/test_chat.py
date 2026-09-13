@@ -522,6 +522,27 @@ class TestChat:
         chat.get_threads(force_refresh=True)
         assert mock_auth.get.call_count == 2
 
+    def test_get_threads_paginates_before(self, mock_auth):
+        def response(threads):
+            result = MagicMock(status_code=200)
+            result.json.return_value = {"threads": threads, "moreBefore": True}
+            return result
+
+        newer = {"communityPost": {"id": "newer", "created_at": "2026-01-20"}}
+        older = {"communityPost": {"id": "older", "created_at": "2026-01-10"}}
+        chat = Chat(publication_id=4906951, auth=mock_auth)
+
+        mock_auth.get.side_effect = [response([newer])]
+        assert [thread.id for thread in chat.get_threads(limit=1)] == ["newer"]
+        assert mock_auth.get.call_count == 1
+
+        mock_auth.get.reset_mock()
+        mock_auth.get.side_effect = [response([newer]), response([older]), response([])]
+
+        threads = chat.get_threads()
+        assert [thread.id for thread in threads] == ["newer", "older"]
+        assert mock_auth.get.call_args.kwargs["params"] == {"before": "2026-01-10"}
+
     def test_get_threads_unauthenticated(self, mock_unauth):
         """Test Chat.get_threads raises error when not authenticated."""
         chat = Chat(publication_id=4906951, auth=mock_unauth)
