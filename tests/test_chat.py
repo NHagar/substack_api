@@ -464,14 +464,14 @@ class TestChat:
     def test_init_with_subdomain(self, mock_auth, monkeypatch):
         """Test Chat initialization with a subdomain string."""
         from substack_api import chat as chat_module
-        monkeypatch.setattr(chat_module, "_resolve_subdomain_to_id", lambda s: 4906951)
+        monkeypatch.setattr(chat_module, "_resolve_subdomain_to_id", lambda s, auth=None: 4906951)
         c = Chat(publication_id="platformer", auth=mock_auth)
         assert c.publication_id == 4906951
 
     def test_init_with_unresolvable_subdomain(self, mock_auth, monkeypatch):
         """Test Chat raises ValueError when subdomain cannot be resolved."""
         from substack_api import chat as chat_module
-        monkeypatch.setattr(chat_module, "_resolve_subdomain_to_id", lambda s: None)
+        monkeypatch.setattr(chat_module, "_resolve_subdomain_to_id", lambda s, auth=None: None)
         with pytest.raises(ValueError, match="Could not resolve subdomain"):
             Chat(publication_id="nonexistent", auth=mock_auth)
 

@@ -20,12 +20,18 @@ _DISCOVERY_HEADERS = {
 }
 
 
-def _resolve_subdomain_to_id(subdomain: str) -> Optional[int]:
+def _resolve_subdomain_to_id(
+    subdomain: str, auth: Optional[SubstackAuth] = None
+) -> Optional[int]:
     """Resolve a publication subdomain to its numeric ID.
 
     Tries the Substack search API first; if that yields no match, falls back to
     fetching a single post from the publication's own API and reading the
     publication_id field from the response.
+
+    The search API now answers with ``{"results": [...]}`` (older responses used
+    ``{"publications": [...]}``) and returns nothing for anonymous callers, so
+    the authenticated session is used when one is available.
     """
     params = {
         "query": f"{subdomain}.substack.com",
@@ -34,9 +40,14 @@ def _resolve_subdomain_to_id(subdomain: str) -> Optional[int]:
         "skipExplanation": "true",
         "sort": "relevance",
     }
-    r = requests.get(SEARCH_URL, headers=_DISCOVERY_HEADERS, params=params, timeout=30)
+    if auth and auth.authenticated:
+        r = auth.get(SEARCH_URL, params=params, timeout=30)
+    else:
+        r = requests.get(SEARCH_URL, headers=_DISCOVERY_HEADERS, params=params, timeout=30)
     r.raise_for_status()
-    for item in r.json().get("publications", []):
+    payload = r.json()
+    items = payload.get("results") or payload.get("publications") or []
+    for item in items:
         if item.get("subdomain", "").lower() == subdomain.lower():
             return item.get("id")
 
@@ -509,7 +520,7 @@ class Chat:
             try:
                 self._publication_id = int(publication_id)
             except ValueError:
-                resolved = _resolve_subdomain_to_id(publication_id)
+                resolved = _resolve_subdomain_to_id(publication_id, auth)
                 if resolved is None:
                     raise ValueError(
                         f"Could not resolve subdomain '{publication_id}' to a publication ID."
