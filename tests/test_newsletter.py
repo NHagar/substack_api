@@ -538,6 +538,43 @@ def test_match_publication():
     assert match is None
 
 
+def test_match_publication_accepts_current_results_key():
+    """Substack now answers publication/search with {"results": [...]}."""
+    search_results = {
+        "results": [
+            {"id": 123, "subdomain": "testblog", "custom_domain": None},
+            {"id": 456, "subdomain": "otherblog", "custom_domain": "custom.example.com"},
+        ]
+    }
+
+    match = _match_publication(search_results, "testblog.substack.com")
+    assert match is not None
+    assert match["id"] == 123
+
+    match = _match_publication(search_results, "custom.example.com")
+    assert match is not None
+    assert match["id"] == 456
+
+    match = _match_publication(search_results, "nonexistent.substack.com")
+    assert match is None
+
+
+def test_match_publication_prefers_results_over_legacy_key():
+    search_results = {
+        "results": [{"id": 42, "subdomain": "testblog", "custom_domain": None}],
+        "publications": [{"id": 99, "subdomain": "testblog", "custom_domain": None}],
+    }
+
+    match = _match_publication(search_results, "testblog.substack.com")
+    assert match is not None
+    assert match["id"] == 42
+
+
+def test_match_publication_handles_missing_and_malformed_payload():
+    assert _match_publication({}, "testblog.substack.com") is None
+    assert _match_publication(None, "testblog.substack.com") is None
+
+
 @patch("substack_api.newsletter.requests.get")
 def test_resolve_publication_id_success(mock_get, newsletter_url, mock_search_result):
     # Set up mock

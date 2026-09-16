@@ -29,9 +29,26 @@ def _host_from_url(url: str) -> str:
     return host
 
 
+def _search_items(search_results: dict) -> List[dict]:
+    """
+    Extract publication items from a discovery search payload.
+
+    Substack currently answers ``/api/v1/publication/search`` with
+    ``{"results": [...]}``; older responses used ``{"publications": [...]}``.
+    Accept either shape.
+    """
+    if not isinstance(search_results, dict):
+        return []
+    for key in ("results", "publications"):
+        items = search_results.get(key)
+        if items:
+            return items
+    return []
+
+
 def _match_publication(search_results: dict, host: str) -> Optional[dict]:
     # Try exact custom domain, then subdomain match
-    for item in search_results.get("publications", []):
+    for item in _search_items(search_results):
         if (
             item.get("custom_domain") and _host_from_url(item["custom_domain"]) == host
         ) or (
@@ -43,7 +60,7 @@ def _match_publication(search_results: dict, host: str) -> Optional[dict]:
     m = re.match(r"^([a-z0-9-]+)\.substack\.com$", host)
     if m:
         sub = m.group(1)
-        for item in search_results.get("publications", []):
+        for item in _search_items(search_results):
             if item.get("subdomain", "").lower() == sub:
                 return item
     return None
@@ -249,9 +266,14 @@ class Newsletter:
             "skipExplanation": "true",
             "sort": "relevance",
         }
-        r = requests.get(
-            SEARCH_URL, headers=DISCOVERY_HEADERS, params=params, timeout=30
-        )
+        # The discovery search endpoint returns an empty result set for anonymous
+        # callers, so use the authenticated session when one is available.
+        if self.auth and self.auth.authenticated:
+            r = self.auth.get(SEARCH_URL, params=params, timeout=30)
+        else:
+            r = requests.get(
+                SEARCH_URL, headers=DISCOVERY_HEADERS, params=params, timeout=30
+            )
         r.raise_for_status()
         match = _match_publication(r.json(), host)
         return match.get("id") if match else None
