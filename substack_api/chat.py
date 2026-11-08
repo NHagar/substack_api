@@ -9,6 +9,7 @@ import requests
 from typing import Any, Dict, List, Optional, Union
 
 from substack_api.auth import SubstackAuth
+from substack_api.newsletter import _search_items
 
 BASE_URL = "https://substack.com/api/v1"
 SEARCH_URL = "https://substack.com/api/v1/publication/search"
@@ -45,9 +46,7 @@ def _resolve_subdomain_to_id(
     else:
         r = requests.get(SEARCH_URL, headers=_DISCOVERY_HEADERS, params=params, timeout=30)
     r.raise_for_status()
-    payload = r.json()
-    items = payload.get("results") or payload.get("publications") or []
-    for item in items:
+    for item in _search_items(r.json()):
         if item.get("subdomain", "").lower() == subdomain.lower():
             return item.get("id")
 

@@ -12,6 +12,9 @@ from substack_api.chat import (
     ChatPaymentRequired,
     ChatThread,
     ThreadNotFound,
+    SEARCH_URL,
+    _DISCOVERY_HEADERS,
+    _resolve_subdomain_to_id,
 )
 
 
@@ -448,6 +451,63 @@ class TestChatThread:
 
 
 class TestChat:
+    @pytest.mark.parametrize("key", ["results", "publications"])
+    def test_init_resolves_subdomain_with_auth(self, key, mock_auth, monkeypatch):
+        anonymous_get = MagicMock()
+        monkeypatch.setattr("substack_api.chat.requests.get", anonymous_get)
+        mock_auth.get.return_value.json.return_value = {
+            key: [None, {"id": 7976, "subdomain": "platformer"}]
+        }
+
+        assert Chat("platformer", auth=mock_auth).publication_id == 7976
+
+        mock_auth.get.assert_called_once_with(
+            SEARCH_URL,
+            params={
+                "query": "platformer.substack.com",
+                "page": 0,
+                "limit": 25,
+                "skipExplanation": "true",
+                "sort": "relevance",
+            },
+            timeout=30,
+        )
+        mock_auth.get.return_value.raise_for_status.assert_called_once()
+        anonymous_get.assert_not_called()
+
+    @pytest.mark.parametrize("authenticated", [None, False])
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {"results": [], "publications": [{"id": 99, "subdomain": "platformer"}]},
+            {"results": "bad"},
+            None,
+        ],
+    )
+    def test_subdomain_resolution_falls_back_to_posts(
+        self, authenticated, payload, monkeypatch
+    ):
+        auth = None if authenticated is None else MagicMock(authenticated=False)
+        search_response = MagicMock()
+        search_response.json.return_value = payload
+        posts_response = MagicMock(status_code=200)
+        posts_response.json.return_value = [{"publication_id": 7976}]
+        anonymous_get = MagicMock(side_effect=[search_response, posts_response])
+        monkeypatch.setattr("substack_api.chat.requests.get", anonymous_get)
+
+        assert _resolve_subdomain_to_id("platformer", auth=auth) == 7976
+
+        assert anonymous_get.call_count == 2
+        anonymous_get.assert_called_with(
+            "https://platformer.substack.com/api/v1/posts",
+            headers=_DISCOVERY_HEADERS,
+            params={"limit": 1},
+            timeout=30,
+        )
+        search_response.raise_for_status.assert_called_once()
+        if auth is not None:
+            auth.get.assert_not_called()
+
     def test_init(self, mock_auth):
         """Test Chat initialization."""
         chat = Chat(publication_id=4906951, auth=mock_auth)

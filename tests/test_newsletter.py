@@ -559,20 +559,71 @@ def test_match_publication_accepts_current_results_key():
     assert match is None
 
 
-def test_match_publication_prefers_results_over_legacy_key():
+@pytest.mark.parametrize(
+    "results, expected_id",
+    [([], None), ([{"id": 42, "subdomain": "testblog"}], 42)],
+)
+def test_match_publication_prefers_results_over_legacy_key(results, expected_id):
     search_results = {
-        "results": [{"id": 42, "subdomain": "testblog", "custom_domain": None}],
+        "results": results,
         "publications": [{"id": 99, "subdomain": "testblog", "custom_domain": None}],
     }
 
     match = _match_publication(search_results, "testblog.substack.com")
-    assert match is not None
-    assert match["id"] == 42
+    assert (match["id"] if match else None) == expected_id
 
 
-def test_match_publication_handles_missing_and_malformed_payload():
-    assert _match_publication({}, "testblog.substack.com") is None
-    assert _match_publication(None, "testblog.substack.com") is None
+@pytest.mark.parametrize(
+    "payload",
+    [
+        None,
+        [],
+        {},
+        {"results": None},
+        {"results": "bad"},
+        {"results": {"id": 123}},
+        {"results": [None, "bad"]},
+        {"publications": "bad"},
+    ],
+)
+def test_match_publication_handles_missing_and_malformed_payload(payload):
+    assert _match_publication(payload, "testblog.substack.com") is None
+
+
+def test_match_publication_skips_malformed_entries():
+    payload = {"results": [None, "bad", {"id": 123, "subdomain": "testblog"}]}
+    assert _match_publication(payload, "testblog.substack.com")["id"] == 123
+
+
+@pytest.mark.parametrize("authenticated", [True, False])
+@patch("substack_api.newsletter.requests.get")
+def test_resolve_publication_id_uses_available_auth(mock_get, authenticated):
+    auth = MagicMock(authenticated=authenticated)
+    response = MagicMock()
+    response.json.return_value = {"results": [{"id": 123, "subdomain": "testblog"}]}
+    auth.get.return_value = mock_get.return_value = response
+
+    newsletter = Newsletter("https://testblog.substack.com", auth=auth)
+    assert newsletter._resolve_publication_id() == 123
+
+    if authenticated:
+        auth.get.assert_called_once_with(
+            SEARCH_URL,
+            params={
+                "query": "testblog.substack.com",
+                "page": 0,
+                "limit": 25,
+                "skipExplanation": "true",
+                "sort": "relevance",
+            },
+            timeout=30,
+        )
+        mock_get.assert_not_called()
+    else:
+        auth.get.assert_not_called()
+        mock_get.assert_called_once()
+        assert mock_get.call_args.kwargs["headers"] == DISCOVERY_HEADERS
+    response.raise_for_status.assert_called_once()
 
 
 @patch("substack_api.newsletter.requests.get")

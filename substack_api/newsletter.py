@@ -35,15 +35,15 @@ def _search_items(search_results: dict) -> List[dict]:
 
     Substack currently answers ``/api/v1/publication/search`` with
     ``{"results": [...]}``; older responses used ``{"publications": [...]}``.
-    Accept either shape.
+    Accept either shape, preferring ``results`` whenever the key is present.
+    Ignore malformed containers and non-dictionary entries.
     """
     if not isinstance(search_results, dict):
         return []
-    for key in ("results", "publications"):
-        items = search_results.get(key)
-        if items:
-            return items
-    return []
+    items = search_results.get("results", search_results.get("publications", []))
+    if not isinstance(items, list):
+        return []
+    return [item for item in items if isinstance(item, dict)]
 
 
 def _match_publication(search_results: dict, host: str) -> Optional[dict]:
